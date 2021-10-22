@@ -10,6 +10,8 @@ public class Juego extends InterfaceJuego {
 	// El objeto Entorno que controla el tiempo y otros
 	private Entorno entorno;
 
+	private Barbarianna barb = new Barbarianna(50, 540, 50, 80, 2, 'D');
+	
 	private Raptor[] raptors = new Raptor[3];
 	private int cont = 100;
 	
@@ -44,6 +46,32 @@ public class Juego extends InterfaceJuego {
 		// Procesamiento de un instante de tiempo
 		// ...
 		
+		// - - - Barbarianna - - - //
+		barb.graficar(entorno);
+		
+		if (entorno.estaPresionada(entorno.TECLA_DERECHA)) {
+			barb.setOrientacion('D');
+			barb.mover();
+		}
+		if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {
+			barb.setOrientacion('I');
+			barb.mover();
+		}
+		if (entorno.sePresiono(entorno.TECLA_ARRIBA)) {
+			barb.saltar();
+		}
+		if (entorno.sePresiono(entorno.TECLA_ESPACIO)) {
+			if (barb.getX() > 25 && barb.getX() < 775) {//solo lo lanza si vikinga está en pantalla
+				barb.generarRelampago();
+				barb.getRelampago().graficar(entorno);
+				barb.getRelampago().mover();
+			}
+			
+		}
+		barb.caida();
+		barb.fueraDePantalla();
+		
+		// - - -
 		if (flagRaptors) {
 			
 			// - - - Generacion de Raptors - - - //
