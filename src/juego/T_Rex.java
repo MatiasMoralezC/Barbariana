@@ -1,23 +1,23 @@
 package juego;
 
-import java.awt.Color;
 import java.util.Random;
 
 import entorno.Entorno;
+import entorno.Herramientas;
 
 public class T_Rex {
-	private double x;
-	private double y;
-	private double velocidad;
+	private float x;
+	private float y;
+	private float velocidad;
 	private char orientacion;
 	private Fireball[] fireballs;
 
-	public T_Rex() {
-		x = 700;
-		y = 100;
-		velocidad = 1.5;
-		orientacion = 'I';
-		fireballs = new Fireball[5];
+	public T_Rex( float x, float y, float velocidad, char orientacion, int cantMaxFireballs) {
+		this.x = x;
+		this.y = y;
+		this.velocidad = velocidad;
+		this.orientacion = orientacion;
+		this.fireballs = new Fireball[cantMaxFireballs];
 	}
 
 	public double getPosX() {
@@ -36,10 +36,6 @@ public class T_Rex {
 		orientacion = orient;
 	}
 
-	public void setFireballs(Fireball ref,int pos) {
-		fireballs[pos]=ref;
-	}
-
 	public boolean fueraDePantalla() {
 		if (x < 0 || x > 800) // habrá que ajustar luego
 			return true;
@@ -54,12 +50,30 @@ public class T_Rex {
 	}
 
 	public void graficar(Entorno e) {
-		e.dibujarRectangulo(x, y, 80, 100, 0, Color.green);
+		
+		float escala = (float) 0.3;
+		
+		if (orientacion == 'D') {
+			if(Math.sin(0.1*x)>0)
+				e.dibujarImagen(Herramientas.cargarImagen("RexC1Der.png"), x, y, 0.15, escala);
+			else
+				e.dibujarImagen(Herramientas.cargarImagen("RexC2Der.png"), x, y, 0.15, escala);
+		}
+		else {
+			if(Math.sin(0.1*x)>0) 
+				e.dibujarImagen(Herramientas.cargarImagen("RexC1Izq.png"), x, y, -0.15, escala);
+			else 
+				e.dibujarImagen(Herramientas.cargarImagen("RexC2Izq.png"), x, y, -0.15, escala);
+		}
+		
 	}
 
 	public Fireball generarFireball() {
 		Random rnd = new Random();
 		int velocidadRandom = 1 + rnd.nextInt(3);
-		return new Fireball(x, y, velocidadRandom, orientacion);
+		if (orientacion == 'D')
+			return new Fireball(x+60, y-20, velocidadRandom, orientacion);
+		else
+			return new Fireball(x-60, y-20, velocidadRandom, orientacion);
 	}
 }

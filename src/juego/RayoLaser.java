@@ -1,15 +1,16 @@
 package juego;
 
-import entorno.Entorno;
-import entorno.Herramientas;
+import java.awt.Color;
 
-public class Fireball {
-	private float x;
-	private float y;
+import entorno.Entorno;
+
+public class RayoLaser {
+	private int x;
+	private int y;
 	private int velocidad;
 	private char direccion;
 
-	public Fireball(float x, float y, int velocidad, char direccion) {
+	public RayoLaser(int x, int y, int velocidad, char direccion) {
 		this.x = x;
 		this.y = y;
 		this.velocidad = velocidad;
@@ -21,17 +22,16 @@ public class Fireball {
 			x = x + velocidad;
 		else
 			x = x - velocidad;
-		
-		y = (float) (y + 1.2*velocidad);
 	}
 
 	public boolean fueraDePantalla() {
-		if (x < -50 || x > 850 || y > 650) // habrá que ajustar luego
+		if (x < -50 || x > 850) // habrá que ajustar luego
 			return true;
 		return false;
 	}
 
 	public void graficar(Entorno e) {
-		e.dibujarImagen(Herramientas.cargarImagen("fireball.png"), x, y, Math.sin(0.5*x), 0.07);
+		e.dibujarRectangulo(x, y, 50, 10, 0, Color.RED);
 	}
+
 }

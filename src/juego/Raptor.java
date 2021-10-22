@@ -10,21 +10,21 @@ public class Raptor {
 	private int y;
 	private int velocidad;
 	private char orientacion;
-	private Rayo rayo;
+	private RayoLaser rayoLaser;
 
-	public Raptor() {
-		x = 840;
-		y = 50;
-		velocidad = 2;
-		orientacion = 'I';
+	public Raptor(int x,int y, int velocidad, char orientacion) {
+		this.x = x;
+		this.y = y;
+		this.velocidad = velocidad;
+		this.orientacion = orientacion;
 	}
 
-	public Rayo getRayo() {
-		return rayo;
+	public RayoLaser getRayoLaser() {
+		return rayoLaser;
 	}
 
-	public void setRayo(Rayo ref) {
-		rayo=ref;
+	public void setRayoLaser(RayoLaser ref) {
+		rayoLaser=ref;
 	}
 
 	public boolean fueraDePantalla() {
@@ -41,17 +41,17 @@ public class Raptor {
 	}
 	
 	public void procesarMovimiento() {
-		
+		mover();
 	}
 
 	public void graficar(Entorno e) {
 		e.dibujarRectangulo(x, y, 50, 50, 0, Color.green);
 	}
 
-	public void generarRayo() {
+	public void generarRayoLaser() {
 		Random rnd = new Random();
 		int velocidadRandom = 5 + rnd.nextInt(5);
-		rayo = new Rayo(x, y, velocidadRandom, orientacion);
+		rayoLaser = new RayoLaser(x, y, velocidadRandom, orientacion);
 	}
 
 }

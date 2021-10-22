@@ -13,7 +13,7 @@ public class Juego extends InterfaceJuego {
 	private Raptor[] raptors = new Raptor[3];
 	private int cont = 100;
 	
-	private T_Rex rex = new T_Rex();
+	private T_Rex rex = new T_Rex(700,63,(float)1.5,'I',7);
 	private int contFB=0;
 	
 	private boolean flagRaptors = true;
@@ -28,6 +28,7 @@ public class Juego extends InterfaceJuego {
 
 		// Inicializar lo que haga falta para el juego
 		// ...
+		
 
 		// Inicia el juego!
 		this.entorno.iniciar();
@@ -58,7 +59,7 @@ public class Juego extends InterfaceJuego {
 				}
 				// si la posicion es valida se genera un raptor
 				if (pos < raptors.length) {
-					raptors[pos] = new Raptor();
+					raptors[pos] = new Raptor(840,50,2,'I');
 				}
 				cont = 0;
 			}
@@ -71,9 +72,9 @@ public class Juego extends InterfaceJuego {
 					if (raptors[i].fueraDePantalla()) { // si esta fuera, eliminarlo
 						raptors[i] = null;
 						cont = 100;
-					} else {	// si esta adentro, graficar y mover
+					} else { // si esta adentro, graficar y mover
 						raptors[i].graficar(entorno);
-						raptors[i].mover();
+						raptors[i].procesarMovimiento();
 					}
 				}
 			}
@@ -82,14 +83,14 @@ public class Juego extends InterfaceJuego {
 
 			for (Raptor raptor : raptors) {
 				if (raptor != null) {	// si esta activo el raptor
-					if (raptor.getRayo() == null) {	// si esta inactivo su rayo laser se lo genera
-						raptor.generarRayo();
+					if (raptor.getRayoLaser() == null) {	// si esta inactivo su rayo laser se lo genera
+						raptor.generarRayoLaser();
 					} else { // si esta inactivo su rayo laser
-						if (raptor.getRayo().fueraDePantalla()) { // si esta fuera de pantalla se elimina el rayo
-							raptor.setRayo(null);
+						if (raptor.getRayoLaser().fueraDePantalla()) { // si esta fuera de pantalla se elimina el rayo
+							raptor.setRayoLaser(null);
 						} else { // si esta dentro de pantalla se grafica y se mueve el rayo
-							raptor.getRayo().mover();
-							raptor.getRayo().graficar(entorno, 'L'); // tipo de rayo L/R (laser o relampago)
+							raptor.getRayoLaser().mover();
+							raptor.getRayoLaser().graficar(entorno);
 						}
 					}
 				}
@@ -106,7 +107,6 @@ public class Juego extends InterfaceJuego {
 			if(rex.getPosX()<200)
 				rex.setOrientacion('D');
 			
-			rex.graficar(entorno);
 			rex.mover();
 			
 			// - - - Generacion, Movimiento y Eliminacion(fuera de rango) de Fireballs en T-Rex - - - //
@@ -115,7 +115,7 @@ public class Juego extends InterfaceJuego {
 			
 			for (int i=0;i<fireballs.length;i++) {
 				if (fireballs[i] == null) {
-					if(contFB>50) {
+					if(contFB>70) {
 						fireballs[i] = rex.generarFireball();
 						contFB=0;
 					}
@@ -130,8 +130,10 @@ public class Juego extends InterfaceJuego {
 			}
 			contFB++;
 			
+			rex.graficar(entorno);
+			
 		} // flagRex
-
+		
 	}
 
 	@SuppressWarnings("unused")
@@ -142,4 +144,5 @@ public class Juego extends InterfaceJuego {
 	public static void intro(Entorno e) {
 		e.escribirTexto("P1 GAMES", 400, 300);
 	}
+	
 }
