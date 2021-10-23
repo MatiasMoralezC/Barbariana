@@ -32,10 +32,6 @@ public class Barbarianna {
 			this.x -= velocidad;
 	}
 	
-	public void saltar() {
-		this.y -= 60;
-	}
-	
 	public void generarRelampago() {
 		int xRayo;
 		if (this.orientacion == 'D') {
@@ -55,7 +51,7 @@ public class Barbarianna {
 		relampago = r;
 	}
 	
-	public void fueraDePantalla() {
+	public void siempreDentroDePantalla() {
 		if (this.x <= 25) {
 			this.x = 25;
 		}
@@ -70,13 +66,6 @@ public class Barbarianna {
 	
 	public void setSaltando(boolean cond) {
 		saltando=cond;
-	}
-	
-	
-	public void caida() {
-		if (this.y <= 540) {
-			this.y += 2;
-		}
 	}
 	
 	public void subir() {
