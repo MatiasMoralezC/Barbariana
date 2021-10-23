@@ -19,7 +19,7 @@ public class Juego extends InterfaceJuego {
 	
 	private int contSalto, contR, contFB;
 	
-	private boolean flagRaptors, flagRex;
+	private boolean flagBarb, flagRaptors, flagRex, flagGameOver;
 
 	Juego() {
 		// Inicializa el objeto entorno
@@ -28,7 +28,7 @@ public class Juego extends InterfaceJuego {
 		// Inicializar lo que haga falta para el juego
 		// ...
 		
-		barb = new Barbarianna(50, 540, 25, 25, 2, 'D');
+		barb = new Barbarianna(50, 540, 25, 25, 2, 3, 'D');
 		contSalto=0;
 		
 		raptors = new Raptor[3];
@@ -37,8 +37,10 @@ public class Juego extends InterfaceJuego {
 		rex = new T_Rex(700,63,(float)1.5,'I',7);
 		contFB=0;
 		
+		flagBarb = true;
 		flagRaptors = true;
 		flagRex = false;
+		flagGameOver = false;
 		
 
 		// Inicia el juego!
@@ -55,8 +57,15 @@ public class Juego extends InterfaceJuego {
 		// Procesamiento de un instante de tiempo
 		// ...
 		
-		graficarPisos(entorno);
-		
+		if(flagBarb) {
+			
+			graficarPisos(entorno);
+			
+			barb.graficar(entorno);
+			
+			barb.graficarVidas(entorno);
+		}
+			
 		procesarEventos();
 		
 		// Grafico, Movimiento y Eliminacion(fuera de rango) de Rayo Mjolnir
@@ -68,8 +77,6 @@ public class Juego extends InterfaceJuego {
 		
 		procesarColisiones();
 		
-		barb.graficar(entorno);
-
 		
 		if (flagRaptors) {
 			
@@ -92,14 +99,35 @@ public class Juego extends InterfaceJuego {
 			rex.graficar(entorno);
 		}
 		
+		if(flagGameOver) {
+			entorno.cambiarFont("Old English Text MT", 95, Color.MAGENTA);
+			entorno.escribirTexto("GAME OVER", 80, 320);
+		}
+		
 	} // tick()
 	
 	private void procesarColisiones() {
+		
+		// Colisiones entre Raptors y Rayo Mjolnir 
 		for(int i=0;i<raptors.length;i++) {
 			if (raptors[i] != null && barb.getRelampago() != null) {
-				if(hayColision(barb.getRelampago().getCuerpo(),raptors[i].getCuerpo())) {
+				if(hayColision(raptors[i].getCuerpo(), barb.getRelampago().getCuerpo())) {
 					raptors[i]=null;
 					barb.setRelampago(null);
+				}
+			}
+		}
+		
+		// Colisiones entre Raptors y Barbarianna
+		for(int i=0;i<raptors.length;i++) {
+			if (raptors[i] != null) {
+				if(hayColision(raptors[i].getCuerpo(), barb.getCuerpo())) {
+					raptors[i]=null;
+					barb.setVidas( barb.getVidas() - 1 );
+					if(barb.getVidas() == 0) {
+						flagBarb = flagRaptors = flagRex = false;
+						flagGameOver = true;
+					}
 				}
 			}
 		}

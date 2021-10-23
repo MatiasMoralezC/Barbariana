@@ -32,7 +32,7 @@ public class Raptor {
 	public void setRayoLaser(RayoLaser ref) {
 		rayoLaser = ref;
 	}
-	
+
 	public Rectangulo getCuerpo() {
 		return cuerpo;
 	}
@@ -47,11 +47,10 @@ public class Raptor {
 		if (orientacion == 'D') {
 			this.x += velocidad;
 			this.cuerpo.setX(x);
-		}
-		else {
+		} else {
 			this.x -= velocidad;
 			this.cuerpo.setX(x);
-		}	
+		}
 	}
 
 	public void procesarMovimiento() {
@@ -65,7 +64,7 @@ public class Raptor {
 	public void generarRayoLaser() {
 		Random rnd = new Random();
 		int velocidadRandom = 5 + rnd.nextInt(5);
-		rayoLaser = new RayoLaser(x, y, velocidadRandom, orientacion);
+		rayoLaser = new RayoLaser(x, y, 40, 5, velocidadRandom, orientacion);
 	}
 
 }

@@ -3,6 +3,7 @@ package juego;
 import java.awt.Color;
 
 import entorno.Entorno;
+import entorno.Herramientas;
 
 public class Barbarianna {
 	private int x;
@@ -10,17 +11,19 @@ public class Barbarianna {
 	private int ancho;
 	private int alto;
 	private int velocidad;
+	private int vidas;
 	private char orientacion;
 	private boolean saltando;
 	private RayoMjolnir relampago;
 	private Rectangulo cuerpo;
 
-	public Barbarianna(int x, int y, int ancho, int alto, int velocidad, char orientacion) {
+	public Barbarianna(int x, int y, int ancho, int alto, int velocidad, int vidas, char orientacion) {
 		this.x = x;
 		this.y = y;
 		this.ancho = ancho;
 		this.alto = alto;
 		this.velocidad = velocidad;
+		this.vidas = vidas;
 		this.orientacion = orientacion;
 		this.saltando = false;
 		this.cuerpo = new Rectangulo(x, y, ancho, alto);
@@ -62,6 +65,14 @@ public class Barbarianna {
 		if (this.x >= 775) {
 			this.x = 775;
 		}
+	}
+	
+	public int getVidas() {
+		return vidas;
+	}
+	
+	public void setVidas(int vidas) {
+		this.vidas = vidas;
 	}
 
 	public boolean getSaltando() {
@@ -136,5 +147,13 @@ public class Barbarianna {
 
 	public void graficar(Entorno e) {
 		e.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, 0, Color.PINK);
+	}
+	
+	public void graficarVidas(Entorno e) {
+		int pos=0;
+		for(int i=0; i<vidas; i++) {
+			e.dibujarImagen(Herramientas.cargarImagen("vidas.png"), 50 + pos, 580, 0, 0.08);
+			pos += 40;
+		}
 	}
 }

@@ -7,21 +7,35 @@ import entorno.Entorno;
 public class RayoLaser {
 	private int x;
 	private int y;
+	private int ancho;
+	private int alto;
 	private int velocidad;
 	private char direccion;
+	private Rectangulo cuerpo;
 
-	public RayoLaser(int x, int y, int velocidad, char direccion) {
+	public RayoLaser(int x, int y, int ancho, int alto, int velocidad, char direccion) {
 		this.x = x;
 		this.y = y;
+		this.ancho = ancho;
+		this.alto = alto;
 		this.velocidad = velocidad;
 		this.direccion = direccion;
+		this.cuerpo = new Rectangulo(x, y, ancho, alto);
+	}
+	
+	public Rectangulo getCuerpo() {
+		return cuerpo;
 	}
 
 	public void mover() {
-		if (direccion == 'D')
-			x = x + velocidad;
-		else
-			x = x - velocidad;
+		if (direccion == 'D') {
+			this.x += velocidad;
+			this.cuerpo.setX(x);
+		}
+		else {
+			this.x -= velocidad;
+			this.cuerpo.setX(x);
+		}	
 	}
 
 	public boolean fueraDePantalla() {
@@ -31,7 +45,7 @@ public class RayoLaser {
 	}
 
 	public void graficar(Entorno e) {
-		e.dibujarRectangulo(x, y, 50, 10, 0, Color.RED);
+		e.dibujarRectangulo(x, y, ancho, alto, 0, Color.RED);
 	}
 
 }
