@@ -10,7 +10,8 @@ public class Juego extends InterfaceJuego {
 	// El objeto Entorno que controla el tiempo y otros
 	private Entorno entorno;
 
-	private Barbarianna barb = new Barbarianna(50, 540, 50, 80, 2, 'D');
+	private Barbarianna barb = new Barbarianna(50, 540, 25, 25, 2, 'D');
+	private int contSalto=0;
 	
 	private Raptor[] raptors = new Raptor[3];
 	private int cont = 100;
@@ -58,17 +59,43 @@ public class Juego extends InterfaceJuego {
 			barb.mover();
 		}
 		if (entorno.sePresiono(entorno.TECLA_ARRIBA)) {
-			barb.saltar();
+			//barb.saltar();
+			barb.setSaltando(true);
 		}
 		if (entorno.sePresiono(entorno.TECLA_ESPACIO)) {
-			if (barb.getX() > 25 && barb.getX() < 775) {//solo lo lanza si vikinga está en pantalla
+			if (barb.getX() > 25 && barb.getX() < 775 && barb.getRelampago()==null) {//solo lo lanza si vikinga está en pantalla
 				barb.generarRelampago();
-				barb.getRelampago().graficar(entorno);
-				barb.getRelampago().mover();
 			}
 			
 		}
-		barb.caida();
+		if(barb.getRelampago()!=null) {
+			RayoMjolnir relampago = barb.getRelampago();
+			if(relampago.fueraDePantalla()) {
+				barb.setRelampago(null);
+			}
+			else {
+				relampago.graficar(entorno);
+				relampago.mover();
+			}
+		}
+		
+		if(barb.getSaltando() && contSalto<30) {
+			barb.subir();
+			contSalto++;
+		}
+		
+		if(contSalto==30) {
+			barb.setSaltando(false);
+		}
+		
+		if(!barb.getSaltando() && contSalto>0) {
+			barb.bajar();
+			contSalto--;
+		}
+		
+		graficarPisos(entorno);
+		
+		//barb.caida();
 		barb.fueraDePantalla();
 		
 		// - - -
@@ -171,6 +198,14 @@ public class Juego extends InterfaceJuego {
 
 	public static void intro(Entorno e) {
 		e.escribirTexto("P1 GAMES", 400, 300);
+	}
+	
+	public static void graficarPisos(Entorno e) {
+		e.dibujarRectangulo(475, 120, 650, 5, 0, Color.MAGENTA); // 4to piso
+		e.dibujarRectangulo(325, 230, 650, 5, 0, Color.RED); // 3to piso
+		e.dibujarRectangulo(475, 340, 650, 5, 0, Color.orange); // 2to piso
+		e.dibujarRectangulo(325, 450, 650, 5, 0, Color.YELLOW); // 1to piso
+		e.dibujarRectangulo(400, 560, 800, 5, 0, Color.GREEN); // planta baja
 	}
 	
 }

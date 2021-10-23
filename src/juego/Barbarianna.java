@@ -11,6 +11,7 @@ public class Barbarianna {
 	private int alto;
 	private int velocidad;
 	private char orientacion; 
+	private boolean saltando;
 	private RayoMjolnir relampago;
 	
 	
@@ -21,6 +22,7 @@ public class Barbarianna {
 		this.alto = alto;
 		this.velocidad = velocidad;
 		this.orientacion = orientacion;
+		this.saltando=false;
 	}
 	
 	public void mover() {
@@ -62,10 +64,26 @@ public class Barbarianna {
 		}
 	}
 	
+	public boolean getSaltando() {
+		return saltando;
+	}
+	
+	public void setSaltando(boolean cond) {
+		saltando=cond;
+	}
+	
+	
 	public void caida() {
 		if (this.y <= 540) {
 			this.y += 2;
 		}
+	}
+	
+	public void subir() {
+		y-=2;
+	}
+	public void bajar() {
+		y+=2;
 	}
 	
 	public int getX() {
