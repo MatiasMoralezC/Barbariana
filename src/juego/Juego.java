@@ -66,8 +66,10 @@ public class Juego extends InterfaceJuego {
 		
 		actualizarEstados();
 		
-		barb.graficar(entorno);
+		procesarColisiones();
 		
+		barb.graficar(entorno);
+
 		
 		if (flagRaptors) {
 			
@@ -91,6 +93,21 @@ public class Juego extends InterfaceJuego {
 		}
 		
 	} // tick()
+	
+	private void procesarColisiones() {
+		for(int i=0;i<raptors.length;i++) {
+			if (raptors[i] != null && barb.getRelampago() != null) {
+				if(hayColision(barb.getRelampago().getCuerpo(),raptors[i].getCuerpo())) {
+					raptors[i]=null;
+					barb.setRelampago(null);
+				}
+			}
+		}
+	}
+	
+	public static boolean hayColision(Rectangulo r1, Rectangulo r2) {
+		return !(r1.posArriba()>r2.posAbajo()||r1.posIzquierda()>r2.posDerecha()||r1.posAbajo()<r2.posArriba()||r1.posDerecha()<r2.posIzquierda());
+	}
 
 	public void procesarFireballsTRex() {
 		Fireball[] fireballs = rex.getFireballs();
@@ -141,7 +158,7 @@ public class Juego extends InterfaceJuego {
 	public void procesarRaptors() {
 		for (int i = 0; i < raptors.length; i++) {
 			if (raptors[i] != null) { // esta activo el raptor
-				if (raptors[i].fueraDePantalla()) { // si esta fuera, eliminarlo
+				if (raptors[i].fueraDePantalla()) { // si esta fuera de pantalla, eliminarlo
 					raptors[i] = null;
 					contR = 100;
 				} else { // si esta adentro, graficar y mover
@@ -154,7 +171,7 @@ public class Juego extends InterfaceJuego {
 
 	public void generacionRaptors() {
 		// se usa un contador para que no se amontonen al ser generados
-		if (contR == 100) {
+		if (contR > 100) {
 			int pos = 0;
 			/* en este while se recorre las posiciones hasta encontrar
 			 * un raptor activo o hasta que la posicion este fuera del
@@ -164,7 +181,7 @@ public class Juego extends InterfaceJuego {
 			}
 			// si la posicion es valida se genera un raptor
 			if (pos < raptors.length) {
-				raptors[pos] = new Raptor(840,50,2,'I');
+				raptors[pos] = new Raptor(840,530,50,50,2,'I');
 			}
 			contR = 0;
 		}

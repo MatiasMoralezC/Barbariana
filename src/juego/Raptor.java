@@ -8,15 +8,21 @@ import entorno.Entorno;
 public class Raptor {
 	private int x;
 	private int y;
+	private int ancho;
+	private int alto;
 	private int velocidad;
 	private char orientacion;
 	private RayoLaser rayoLaser;
+	private Rectangulo cuerpo;
 
-	public Raptor(int x,int y, int velocidad, char orientacion) {
+	public Raptor(int x, int y, int ancho, int alto, int velocidad, char orientacion) {
 		this.x = x;
 		this.y = y;
+		this.ancho = ancho;
+		this.alto = alto;
 		this.velocidad = velocidad;
 		this.orientacion = orientacion;
+		this.cuerpo = new Rectangulo(x, y, ancho, alto);
 	}
 
 	public RayoLaser getRayoLaser() {
@@ -24,7 +30,11 @@ public class Raptor {
 	}
 
 	public void setRayoLaser(RayoLaser ref) {
-		rayoLaser=ref;
+		rayoLaser = ref;
+	}
+	
+	public Rectangulo getCuerpo() {
+		return cuerpo;
 	}
 
 	public boolean fueraDePantalla() {
@@ -34,18 +44,22 @@ public class Raptor {
 	}
 
 	public void mover() {
-		if (orientacion == 'D')
-			x = x + velocidad;
-		else
-			x = x - velocidad;
+		if (orientacion == 'D') {
+			this.x += velocidad;
+			this.cuerpo.setX(x);
+		}
+		else {
+			this.x -= velocidad;
+			this.cuerpo.setX(x);
+		}	
 	}
-	
+
 	public void procesarMovimiento() {
 		mover();
 	}
 
 	public void graficar(Entorno e) {
-		e.dibujarRectangulo(x, y, 50, 50, 0, Color.green);
+		e.dibujarRectangulo(x, y, ancho, alto, 0, Color.green);
 	}
 
 	public void generarRayoLaser() {

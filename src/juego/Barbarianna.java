@@ -10,11 +10,11 @@ public class Barbarianna {
 	private int ancho;
 	private int alto;
 	private int velocidad;
-	private char orientacion; 
+	private char orientacion;
 	private boolean saltando;
 	private RayoMjolnir relampago;
-	
-	
+	private Rectangulo cuerpo;
+
 	public Barbarianna(int x, int y, int ancho, int alto, int velocidad, char orientacion) {
 		this.x = x;
 		this.y = y;
@@ -22,16 +22,20 @@ public class Barbarianna {
 		this.alto = alto;
 		this.velocidad = velocidad;
 		this.orientacion = orientacion;
-		this.saltando=false;
+		this.saltando = false;
+		this.cuerpo = new Rectangulo(x, y, ancho, alto);
 	}
-	
+
 	public void mover() {
-		if (orientacion == 'D')
+		if (orientacion == 'D') {
 			this.x += velocidad;
-		else
+			cuerpo.setX(x);
+		} else {
 			this.x -= velocidad;
+			cuerpo.setX(x);
+		}
 	}
-	
+
 	public void generarRelampago() {
 		int xRayo;
 		if (this.orientacion == 'D') {
@@ -39,18 +43,18 @@ public class Barbarianna {
 		} else {
 			xRayo = getX() - 25;
 		}
-		
-		relampago = new RayoMjolnir(xRayo, this.y, 5, this.orientacion);
+
+		relampago = new RayoMjolnir(xRayo, y, 50, 10, 5, this.orientacion);
 	}
-	
+
 	public RayoMjolnir getRelampago() {
 		return relampago;
 	}
-	
+
 	public void setRelampago(RayoMjolnir r) {
 		relampago = r;
 	}
-	
+
 	public void siempreDentroDePantalla() {
 		if (this.x <= 25) {
 			this.x = 25;
@@ -59,22 +63,25 @@ public class Barbarianna {
 			this.x = 775;
 		}
 	}
-	
+
 	public boolean getSaltando() {
 		return saltando;
 	}
-	
-	public void setSaltando(boolean cond) {
-		saltando=cond;
+
+	public void setSaltando(boolean saltando) {
+		this.saltando = saltando;
 	}
-	
+
 	public void subir() {
-		y-=2;
+		y -= 2;
+		cuerpo.setY(y);
 	}
+
 	public void bajar() {
-		y+=2;
+		y += 2;
+		cuerpo.setY(y);
 	}
-	
+
 	public int getX() {
 		return x;
 	}
@@ -122,7 +129,11 @@ public class Barbarianna {
 	public void setOrientacion(char orientacion) {
 		this.orientacion = orientacion;
 	}
-	
+
+	public Rectangulo getCuerpo() {
+		return cuerpo;
+	}
+
 	public void graficar(Entorno e) {
 		e.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, 0, Color.PINK);
 	}
