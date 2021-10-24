@@ -18,7 +18,7 @@ public class Juego extends InterfaceJuego {
 	private Raptor[] raptors;
 	private T_Rex rex;
 	private Rectangulo[] pisos;
-	
+
 	private java.awt.Image fondoImagen;
 	private java.awt.Image pisosImagen;
 	private java.awt.Image pisoImagen;
@@ -36,9 +36,9 @@ public class Juego extends InterfaceJuego {
 		// ...
 
 		construirPisos();
-		fondoImagen=Herramientas.cargarImagen("fondo.png");
-		pisoImagen=Herramientas.cargarImagen("piso.png");
-		pisosImagen=Herramientas.cargarImagen("pisos.png");
+		fondoImagen = Herramientas.cargarImagen("fondo.png");
+		pisoImagen = Herramientas.cargarImagen("piso.png");
+		pisosImagen = Herramientas.cargarImagen("pisos.png");
 
 		barb = new Barbarianna(50, 540, 25, 30, 2, 3, 'D'); // planta baja (50,540)
 		contSalto = 0;
@@ -48,7 +48,7 @@ public class Juego extends InterfaceJuego {
 		raptors = new Raptor[6];
 		contR = 100;
 
-		rex = new T_Rex(700, 63, (float) 1.5, 'I', 7);
+		rex = new T_Rex(700, 63, 120, 100, (float) 1.5, 10, 7, 'I');
 		contFB = 0;
 
 		flagBarb = true;
@@ -80,9 +80,9 @@ public class Juego extends InterfaceJuego {
 
 			barb.graficar(entorno);
 			barb.graficarVidas(entorno);
-			
+
 			entorno.cambiarFont("Bauhaus 93", 14, Color.WHITE);
-			entorno.escribirTexto("SCORE: "+puntaje, 340, 585);
+			entorno.escribirTexto("SCORE: " + puntaje, 340, 585);
 
 			// Grafico, Movimiento y Eliminacion(fuera de rango) de Rayo Mjolnir
 			procesarRayoMjolnir();
@@ -108,14 +108,16 @@ public class Juego extends InterfaceJuego {
 		}
 
 		if (flagRex) {
+			if (rex != null) {
+				rex.procesarMovimiento();
 
-			rex.procesarMovimiento();
+				// Grafico, Generacion, Movimiento y Eliminacion(fuera de rango) de Fireballs en
+				// T-Rex
+				procesarFireballsTRex();
 
-			// Grafico, Generacion, Movimiento y Eliminacion(fuera de rango) de Fireballs en
-			// T-Rex
-			procesarFireballsTRex();
+				rex.graficar(entorno);
+			}
 
-			rex.graficar(entorno);
 		}
 
 		if (flagGameOver) {
@@ -128,7 +130,7 @@ public class Juego extends InterfaceJuego {
 	private void procesarColisiones() {
 
 		if (flagBarb) {
-			
+
 			// Colision entre Barbarianna y Pisos (simulador de gravedad)
 			hayColisionConPisosBarbarianna = false;
 			for (Rectangulo piso : pisos) {
@@ -148,7 +150,7 @@ public class Juego extends InterfaceJuego {
 		}
 
 		if (flagRaptors) {
-			
+
 			// Colision entre Raptors y Pisos (simulador de gravedad)
 			for (Raptor raptor : raptors) {
 				if (raptor != null) {
@@ -174,7 +176,7 @@ public class Juego extends InterfaceJuego {
 					if (hayColision(raptors[i].getCuerpo(), barb.getRelampago().getCuerpo())) {
 						raptors[i] = null;
 						barb.setRelampago(null);
-						puntaje+=100;
+						puntaje += 100;
 					}
 				}
 			}
@@ -184,13 +186,13 @@ public class Juego extends InterfaceJuego {
 				if (raptors[i] != null) {
 					if (hayColision(raptors[i].getCuerpo(), barb.getCuerpo())) {
 						raptors[i] = null;
-						barb.setVidas(barb.getVidas() - 1);	// quitar vida
+						barb.setVidas(barb.getVidas() - 1); // quitar vida
 						if (barb.getVidas() == 0) { // si las vidas es igual a cero, game over!
 							flagBarb = flagRaptors = flagRex = false;
 							flagGameOver = true;
 						}
-						if(puntaje>=100)
-							puntaje-=100; // restar puntaje
+						if (puntaje >= 100)
+							puntaje -= 100; // restar puntaje
 					}
 				}
 			}
@@ -207,34 +209,59 @@ public class Juego extends InterfaceJuego {
 									flagBarb = flagRaptors = flagRex = false;
 									flagGameOver = true;
 								}
-								if(puntaje>=100)
-									puntaje-=100; // restar puntaje
+								if (puntaje >= 100)
+									puntaje -= 100; // restar puntaje
 							}
 						}
 					}
 				}
 			}
 		}
-		
-		if(flagRex) {
-			
+
+		if (flagRex) {
+
 			// Colisiones entre Fireballs y Barbarianna
-			Fireball[] fireballs = rex.getFireballs();
-			for(int i=0; i<fireballs.length; i++) {
-				if(fireballs[i]!=null) {
-					if (hayColision(fireballs[i].getCuerpo(),barb.getCuerpo())) {
-						fireballs[i]=null;
-						barb.setVidas(barb.getVidas() - 1); // quitar vida
-						if (barb.getVidas() == 0) { // si las vidas es igual a cero, game over!
-							flagBarb = flagRaptors = flagRex = false;
-							flagGameOver = true;
+			if (rex != null) {
+				Fireball[] fireballs = rex.getFireballs();
+				for (int i = 0; i < fireballs.length; i++) {
+					if (fireballs[i] != null) {
+						if (hayColision(fireballs[i].getCuerpo(), barb.getCuerpo())) {
+							fireballs[i] = null;
+							barb.setVidas(barb.getVidas() - 1); // quitar vida
+							if (barb.getVidas() == 0) { // si las vidas es igual a cero, game over!
+								flagBarb = flagRaptors = flagRex = false;
+								flagGameOver = true;
+							}
+							if (puntaje >= 100)
+								puntaje -= 100; // restar puntaje
 						}
-						if(puntaje>=100)
-							puntaje-=100; // restar puntaje
 					}
 				}
+				
+				// Colisiones entre TRex y Barbarianna
+				if (hayColision(rex.getCuerpo(), barb.getCuerpo())) {
+					barb.setVidas(barb.getVidas() - 1); // quitar vida
+					if (barb.getVidas() == 0) { // si las vidas es igual a cero, game over!
+						flagBarb = flagRaptors = flagRex = false;
+						flagGameOver = true;
+					}
+					if (puntaje >= 100)
+						puntaje -= 100; // restar puntaje
+				}
+
+				// Colisiones entre TRex y Rayo Mjolnir
+				if (barb.getRelampago() != null) {
+					if (hayColision(rex.getCuerpo(), barb.getRelampago().getCuerpo())) {
+						barb.setRelampago(null);
+						rex.setVidas(rex.getVidas() - 1); // quitar vida
+						if (rex.getVidas() == 0) {
+							rex = null;
+						}
+						puntaje += 5000;
+					}
+				}
+				
 			}
-			
 		}
 
 	}
@@ -259,7 +286,6 @@ public class Juego extends InterfaceJuego {
 				} else {
 					fireballs[i].mover();
 					fireballs[i].graficar(entorno);
-					fireballs[i].getCuerpo().dibujar(entorno);
 				}
 			}
 		}
@@ -405,7 +431,7 @@ public class Juego extends InterfaceJuego {
 
 	}
 
-	public void graficarPisos() {																												// baja
+	public void graficarPisos() { // baja
 		entorno.dibujarImagen(pisosImagen, 480, 120, 0); // piso4
 		entorno.dibujarImagen(pisosImagen, 320, 230, 0); // piso3
 		entorno.dibujarImagen(pisosImagen, 480, 340, 0); // piso2

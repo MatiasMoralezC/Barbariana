@@ -25,15 +25,15 @@ public class Fireball {
 	public void mover() {
 		if (direccion == 'D') {
 			x = x + velocidad;
-			cuerpo.setX(x);
+			cuerpo.setX(x+2);
 		}
 		else {
 			x = x - velocidad;
-			cuerpo.setX(x);
+			cuerpo.setX(x+2);
 		}
 		
 		y = (float) (y + 1.2*velocidad);
-		cuerpo.setY(y);
+		cuerpo.setY(y+1);
 	}
 
 	public boolean fueraDePantalla() {

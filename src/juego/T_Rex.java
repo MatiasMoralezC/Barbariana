@@ -8,16 +8,25 @@ import entorno.Herramientas;
 public class T_Rex {
 	private float x;
 	private float y;
+	private float ancho;
+	private float alto;
 	private float velocidad;
+	private int vidas;
 	private char orientacion;
 	private Fireball[] fireballs;
+	private Rectangulo cuerpo;
 
-	public T_Rex(float x, float y, float velocidad, char orientacion, int cantMaxFireballs) {
+	public T_Rex(float x, float y, float ancho, float alto, float velocidad, int vidas, int cantMaxFireballs,
+			char orientacion) {
 		this.x = x;
 		this.y = y;
+		this.ancho = ancho;
+		this.alto = alto;
 		this.velocidad = velocidad;
+		this.vidas = vidas;
 		this.orientacion = orientacion;
 		this.fireballs = new Fireball[cantMaxFireballs];
+		this.cuerpo = new Rectangulo(x, y, ancho, alto);
 	}
 
 	public double getPosX() {
@@ -26,6 +35,34 @@ public class T_Rex {
 
 	public double getPosY() {
 		return y;
+	}
+
+	public float getAncho() {
+		return ancho;
+	}
+
+	public void setAncho(float ancho) {
+		this.ancho = ancho;
+	}
+
+	public float getAlto() {
+		return alto;
+	}
+
+	public void setAlto(float alto) {
+		this.alto = alto;
+	}
+
+	public Rectangulo getCuerpo() {
+		return cuerpo;
+	}
+
+	public int getVidas() {
+		return vidas;
+	}
+
+	public void setVidas(int vidas) {
+		this.vidas = vidas;
 	}
 
 	public Fireball[] getFireballs() {
@@ -43,10 +80,13 @@ public class T_Rex {
 	}
 
 	public void mover() {
-		if (orientacion == 'D')
-			x = x + velocidad;
-		else
-			x = x - velocidad;
+		if (orientacion == 'D') {
+			this.x += velocidad;
+			this.cuerpo.setX(x);
+		} else {
+			this.x -= velocidad;
+			this.cuerpo.setX(x);
+		}
 	}
 
 	public void procesarMovimiento() {

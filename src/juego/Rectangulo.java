@@ -61,7 +61,7 @@ public class Rectangulo {
 		return x + (ancho / 2);
 	}
 	
-	public void dibujar(Entorno e) {
+	public void graficar(Entorno e) {
 		e.dibujarRectangulo(x, y, ancho, alto, 0, Color.MAGENTA);
 	}
 
