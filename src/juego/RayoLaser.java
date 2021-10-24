@@ -5,15 +5,15 @@ import java.awt.Color;
 import entorno.Entorno;
 
 public class RayoLaser {
-	private int x;
-	private int y;
-	private int ancho;
-	private int alto;
+	private float x;
+	private float y;
+	private float ancho;
+	private float alto;
 	private int velocidad;
 	private char direccion;
 	private Rectangulo cuerpo;
 
-	public RayoLaser(int x, int y, int ancho, int alto, int velocidad, char direccion) {
+	public RayoLaser(float x, float y, float ancho, float alto, int velocidad, char direccion) {
 		this.x = x;
 		this.y = y;
 		this.ancho = ancho;

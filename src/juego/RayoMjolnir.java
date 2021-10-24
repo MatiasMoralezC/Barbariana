@@ -3,17 +3,18 @@ package juego;
 import java.awt.Color;
 
 import entorno.Entorno;
+import entorno.Herramientas;
 
 public class RayoMjolnir {
-	private int x;
-	private int y;
-	private int ancho;
-	private int alto;
+	private float x;
+	private float y;
+	private float ancho;
+	private float alto;
 	private int velocidad;
 	private char direccion;
 	private Rectangulo cuerpo;
 
-	public RayoMjolnir(int x, int y, int ancho, int alto, int velocidad, char direccion) {
+	public RayoMjolnir(float x, float y, float ancho, float alto, int velocidad, char direccion) {
 		this.x = x;
 		this.y = y;
 		this.ancho = ancho;
@@ -22,7 +23,7 @@ public class RayoMjolnir {
 		this.direccion = direccion;
 		this.cuerpo = new Rectangulo(x, y, ancho, alto);
 	}
-	
+
 	public Rectangulo getCuerpo() {
 		return cuerpo;
 	}
@@ -31,11 +32,10 @@ public class RayoMjolnir {
 		if (direccion == 'D') {
 			this.x += velocidad;
 			cuerpo.setX(x);
-		}
-		else {
+		} else {
 			this.x -= velocidad;
 			cuerpo.setX(x);
-		}	
+		}
 	}
 
 	public boolean fueraDePantalla() {
@@ -45,7 +45,20 @@ public class RayoMjolnir {
 	}
 
 	public void graficar(Entorno e) {
-		e.dibujarRectangulo(x, y, ancho, alto, 0, Color.YELLOW);
+		float escala=(float) 0.08;
+		if (direccion == 'D') {
+			if (Math.sin(0.1 * x) > 0) {
+				e.dibujarImagen(Herramientas.cargarImagen("rayo1Der.png"), x, y, 0, escala);
+			} else {
+				e.dibujarImagen(Herramientas.cargarImagen("rayo2Der.png"), x, y, 0, escala);
+			}
+		} else {
+			if (Math.sin(0.1 * x) > 0) {
+				e.dibujarImagen(Herramientas.cargarImagen("rayo1Izq.png"), x, y, 0, escala);
+			} else {
+				e.dibujarImagen(Herramientas.cargarImagen("rayo2Izq.png"), x, y, 0, escala);
+			}
+		}
 	}
 
 }

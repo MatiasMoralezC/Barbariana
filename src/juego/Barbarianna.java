@@ -6,20 +6,21 @@ import entorno.Entorno;
 import entorno.Herramientas;
 
 public class Barbarianna {
-	private int x;
-	private int y;
-	private int ancho;
-	private int alto;
+	private float x;
+	private float y;
+	private float ancho;
+	private float alto;
 	private int velocidad;
 	private int vidas;
 	private char orientacion;
 	private boolean saltando;
-	private boolean bajando;
+	private boolean superSaltando;
 	private boolean agachada;
+	private boolean escudo;
 	private RayoMjolnir relampago;
 	private Rectangulo cuerpo;
 
-	public Barbarianna(int x, int y, int ancho, int alto, int velocidad, int vidas, char orientacion) {
+	public Barbarianna(float x, float y, float ancho, float alto, int velocidad, int vidas, char orientacion) {
 		this.x = x;
 		this.y = y;
 		this.ancho = ancho;
@@ -28,8 +29,9 @@ public class Barbarianna {
 		this.vidas = vidas;
 		this.orientacion = orientacion;
 		this.saltando = false;
-		this.bajando = false;
+		this.setSuperSaltando(false);
 		this.agachada = false;
+		this.escudo = false;
 		this.cuerpo = new Rectangulo(x, y, ancho, alto);
 	}
 
@@ -43,12 +45,12 @@ public class Barbarianna {
 		}
 	}
 	
-	public void subir() {
-		y -= 3;
+	public void saltar() {
+		y -= 6;
 		cuerpo.setY(y);
 	}
 
-	public void bajar() {
+	public void caer() {
 		y += 3;
 		cuerpo.setY(y);
 	}
@@ -78,6 +80,14 @@ public class Barbarianna {
 		this.vidas = vidas;
 	}
 	
+	public boolean getEscudo() {
+		return escudo;
+	}
+	
+	public void setEscudo(boolean escudo) {
+		this.escudo = escudo;
+	}
+	
 	public boolean getAgachada() {
 		return agachada;
 	}
@@ -93,16 +103,16 @@ public class Barbarianna {
 	public void setSaltando(boolean saltando) {
 		this.saltando = saltando;
 	}
-	
-	public boolean getBajando() {
-		return bajando;
+
+	public boolean getSuperSaltando() {
+		return superSaltando;
 	}
 
-	public void setBajando(boolean bajando) {
-		this.bajando = bajando;
+	public void setSuperSaltando(boolean superSaltando) {
+		this.superSaltando = superSaltando;
 	}
 
-	public int getX() {
+	public float getX() {
 		return x;
 	}
 
@@ -110,27 +120,27 @@ public class Barbarianna {
 		this.x = x;
 	}
 
-	public int getY() {
+	public float getY() {
 		return y;
 	}
 
-	public void setY(int y) {
+	public void setY(float y) {
 		this.y = y;
 	}
 
-	public int getAncho() {
+	public float getAncho() {
 		return ancho;
 	}
 
-	public void setAncho(int ancho) {
+	public void setAncho(float ancho) {
 		this.ancho = ancho;
 	}
 
-	public int getAlto() {
+	public float getAlto() {
 		return alto;
 	}
 
-	public void setAlto(int alto) {
+	public void setAlto(float alto) {
 		this.alto = alto;
 	}
 
@@ -152,6 +162,26 @@ public class Barbarianna {
 
 	public Rectangulo getCuerpo() {
 		return cuerpo;
+	}
+	
+	public boolean estaDebajoDeUnHueco(Rectangulo[] pisos) {
+		// se toma un piso con hueco a la derecha y se crea una columna imaginaria
+		if(x>pisos[3].posDerecha()+20 && y>pisos[4].getY()) { // rango y ( pos4toPiso - 600)
+			return true;
+		}
+		// se toma un piso con hueco a la izquierda y se crea una columna imaginaria
+		if(x<pisos[2].posIzquierda()-20 && y<pisos[1].getY()) { // rango y ( 0 - pos1erPiso )
+			return true;
+		}
+		return false;
+	}
+	
+	public void graficarVidas(Entorno e) {
+		int pos=0;
+		for(int i=0; i<vidas; i++) {
+			e.dibujarImagen(Herramientas.cargarImagen("vidas.png"), 50 + pos, 580, 0, 0.08);
+			pos += 40;
+		}
 	}
 
 	public void graficar(Entorno e) {
@@ -181,21 +211,14 @@ public class Barbarianna {
 	}
 	
 	public void generarRelampago() {
-		int xRayo;
+		float xRayo;
 		if (this.orientacion == 'D') {
 			xRayo = getX() + 30;
 		} else {
 			xRayo = getX() - 30;
 		}
 
-		relampago = new RayoMjolnir(xRayo, y, 40, 5, 5, this.orientacion);
+		relampago = new RayoMjolnir(xRayo, y, 30, 10, 3, this.orientacion);
 	}
-	
-	public void graficarVidas(Entorno e) {
-		int pos=0;
-		for(int i=0; i<vidas; i++) {
-			e.dibujarImagen(Herramientas.cargarImagen("vidas.png"), 50 + pos, 580, 0, 0.08);
-			pos += 40;
-		}
-	}
+
 }

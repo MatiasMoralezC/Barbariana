@@ -8,21 +8,32 @@ public class Fireball {
 	private float y;
 	private int velocidad;
 	private char direccion;
+	private Rectangulo cuerpo;
 
-	public Fireball(float x, float y, int velocidad, char direccion) {
+	public Fireball(float x, float y, float ancho, float alto, int velocidad, char direccion) {
 		this.x = x;
 		this.y = y;
 		this.velocidad = velocidad;
 		this.direccion = direccion;
+		this.cuerpo = new Rectangulo(x, y, ancho, alto);
+	}
+	
+	public Rectangulo getCuerpo() {
+		return cuerpo;
 	}
 
 	public void mover() {
-		if (direccion == 'D')
+		if (direccion == 'D') {
 			x = x + velocidad;
-		else
+			cuerpo.setX(x);
+		}
+		else {
 			x = x - velocidad;
+			cuerpo.setX(x);
+		}
 		
 		y = (float) (y + 1.2*velocidad);
+		cuerpo.setY(y);
 	}
 
 	public boolean fueraDePantalla() {
