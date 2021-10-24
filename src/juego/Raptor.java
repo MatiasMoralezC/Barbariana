@@ -29,8 +29,8 @@ public class Raptor {
 		return rayoLaser;
 	}
 
-	public void setRayoLaser(RayoLaser ref) {
-		rayoLaser = ref;
+	public void setRayoLaser(RayoLaser rayoLaser) {
+		this.rayoLaser = rayoLaser;
 	}
 
 	public Rectangulo getCuerpo() {

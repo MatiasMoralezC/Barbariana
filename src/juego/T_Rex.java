@@ -50,9 +50,7 @@ public class T_Rex {
 	}
 
 	public void graficar(Entorno e) {
-		
 		float escala = (float) 0.3;
-		
 		if (orientacion == 'D') {
 			if(Math.sin(0.1*x)>0)
 				e.dibujarImagen(Herramientas.cargarImagen("RexC1Der.png"), x, y, 0.15, escala);

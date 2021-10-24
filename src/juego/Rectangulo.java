@@ -24,6 +24,14 @@ public class Rectangulo {
 	public void setY(float y) {
 		this.y = y;
 	}
+	
+	public void setAncho(float ancho) {
+		this.ancho = ancho;
+	}
+	
+	public void setAlto(float alto) {
+		this.alto = alto;
+	}
 
 	public float posArriba() {
 		return y - (alto / 2);

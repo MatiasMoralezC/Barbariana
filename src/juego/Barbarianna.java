@@ -14,6 +14,8 @@ public class Barbarianna {
 	private int vidas;
 	private char orientacion;
 	private boolean saltando;
+	private boolean bajando;
+	private boolean agachada;
 	private RayoMjolnir relampago;
 	private Rectangulo cuerpo;
 
@@ -26,6 +28,8 @@ public class Barbarianna {
 		this.vidas = vidas;
 		this.orientacion = orientacion;
 		this.saltando = false;
+		this.bajando = false;
+		this.agachada = false;
 		this.cuerpo = new Rectangulo(x, y, ancho, alto);
 	}
 
@@ -38,16 +42,15 @@ public class Barbarianna {
 			cuerpo.setX(x);
 		}
 	}
+	
+	public void subir() {
+		y -= 3;
+		cuerpo.setY(y);
+	}
 
-	public void generarRelampago() {
-		int xRayo;
-		if (this.orientacion == 'D') {
-			xRayo = getX() + 25;
-		} else {
-			xRayo = getX() - 25;
-		}
-
-		relampago = new RayoMjolnir(xRayo, y, 50, 10, 5, this.orientacion);
+	public void bajar() {
+		y += 3;
+		cuerpo.setY(y);
 	}
 
 	public RayoMjolnir getRelampago() {
@@ -74,6 +77,14 @@ public class Barbarianna {
 	public void setVidas(int vidas) {
 		this.vidas = vidas;
 	}
+	
+	public boolean getAgachada() {
+		return agachada;
+	}
+
+	public void setAgachada(boolean agachada) {
+		this.agachada = agachada;
+	}
 
 	public boolean getSaltando() {
 		return saltando;
@@ -82,15 +93,13 @@ public class Barbarianna {
 	public void setSaltando(boolean saltando) {
 		this.saltando = saltando;
 	}
-
-	public void subir() {
-		y -= 2;
-		cuerpo.setY(y);
+	
+	public boolean getBajando() {
+		return bajando;
 	}
 
-	public void bajar() {
-		y += 2;
-		cuerpo.setY(y);
+	public void setBajando(boolean bajando) {
+		this.bajando = bajando;
 	}
 
 	public int getX() {
@@ -146,7 +155,40 @@ public class Barbarianna {
 	}
 
 	public void graficar(Entorno e) {
-		e.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, 0, Color.PINK);
+		float escala = (float) 0.05;
+		if (orientacion == 'D') {
+			if(agachada) {
+				e.dibujarImagen(Herramientas.cargarImagen("BarbAgDer.png"), x, y, 0, escala);
+			}
+			else { // si no esta agachada
+				if(Math.sin(0.1*x)>0)
+					e.dibujarImagen(Herramientas.cargarImagen("BarbC1Der.png"), x, y, 0, escala);
+				else
+					e.dibujarImagen(Herramientas.cargarImagen("BarbC1Der.png"), x, y, 0, escala);
+			}
+		}
+		else { // orientacion == 'I'
+			if(agachada) {
+				e.dibujarImagen(Herramientas.cargarImagen("BarbAgIzq.png"), x, y, 0, escala);
+			}
+			else {
+				if(Math.sin(0.1*x)>0) 
+					e.dibujarImagen(Herramientas.cargarImagen("BarbC1Izq.png"), x, y, 0, escala);
+				else 
+					e.dibujarImagen(Herramientas.cargarImagen("BarbC1Izq.png"), x, y, 0, escala);
+			}
+		}
+	}
+	
+	public void generarRelampago() {
+		int xRayo;
+		if (this.orientacion == 'D') {
+			xRayo = getX() + 30;
+		} else {
+			xRayo = getX() - 30;
+		}
+
+		relampago = new RayoMjolnir(xRayo, y, 40, 5, 5, this.orientacion);
 	}
 	
 	public void graficarVidas(Entorno e) {
