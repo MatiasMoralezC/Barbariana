@@ -1,6 +1,9 @@
 package juego;
 
 import java.awt.Color;
+
+import javax.sound.sampled.Clip;
+
 import entorno.Herramientas;
 
 import entorno.Entorno;
@@ -24,6 +27,7 @@ public class Juego extends InterfaceJuego {
 	private java.awt.Image fondoImagen;
 	private java.awt.Image pisosImagen;
 	private java.awt.Image pisoImagen;
+	private Clip fxRelampago;
 
 	// Contadores - contR(raptors) - contFB(fireballs)
 	private int contSalto, contSuperSalto, contadorVueltasRaptors, cantVueltasRaptors, contDaño;
@@ -38,6 +42,9 @@ public class Juego extends InterfaceJuego {
 		this.entorno = new Entorno(this, "Castlevania, Barbarianna Viking Edition - Grupo 4", 800, 600);
 
 		// Inicializar lo que haga falta para el juego
+		
+		//Inicializa los efectos de sonido
+		fxRelampago = Herramientas.cargarSonido("thunder.wav");
 
 		construirPisos(); // Inicializa y declara los elementos del array de pisos.
 		fondoImagen = Herramientas.cargarImagen("fondo.png");
@@ -511,8 +518,11 @@ public class Juego extends InterfaceJuego {
 			barb.setEscudo(false);
 
 		if (entorno.sePresiono(entorno.TECLA_ESPACIO) && !barb.getEscudo() && !barb.getAgachada()) {
-			if (barb.getRelampago() == null && barb.getX() > 25 && barb.getX() < 775)
+			if (barb.getRelampago() == null && barb.getX() > 25 && barb.getX() < 775) {
 				barb.generarRelampago();
+				fxRelampago();
+			}
+				
 		}
 		if (entorno.estaPresionada(entorno.TECLA_CTRL) && barb.estaDebajoDeUnHueco(pisos) && !barb.getSuperSaltando()
 				&& !barb.getEscudo() && !barb.getAgachada() && !barb.getSaltando() && hayColisionConPisosBarbarianna)
@@ -543,6 +553,12 @@ public class Juego extends InterfaceJuego {
 		} else {
 			entorno.dibujarImagen(Herramientas.cargarImagen("rayo2Der.png"), 700, 580, -0.1, 0.09);
 		}
+	}
+	
+	//Ejecucion de sonidos
+	public void fxRelampago() { //Reproduce el sonido del rayo y vuelve a cargar el archivo para reutilizarse
+		fxRelampago.start();
+		fxRelampago = Herramientas.cargarSonido("thunder.wav");
 	}
 
 	public void selectorNivel() {
