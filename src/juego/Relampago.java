@@ -1,11 +1,9 @@
 package juego;
 
-import java.awt.Color;
-
 import entorno.Entorno;
 import entorno.Herramientas;
 
-public class RayoMjolnir {
+public class Relampago {
 	private float x;
 	private float y;
 	private float ancho;
@@ -14,7 +12,7 @@ public class RayoMjolnir {
 	private char direccion;
 	private Rectangulo cuerpo;
 
-	public RayoMjolnir(float x, float y, float ancho, float alto, int velocidad, char direccion) {
+	public Relampago(float x, float y, float ancho, float alto, int velocidad, char direccion) {
 		this.x = x;
 		this.y = y;
 		this.ancho = ancho;

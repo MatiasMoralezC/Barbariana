@@ -10,13 +10,13 @@ public class T_Rex {
 	private float y;
 	private float ancho;
 	private float alto;
-	private float velocidad;
+	private int velocidad;
 	private int vidas;
 	private char orientacion;
 	private Fireball[] fireballs;
 	private Rectangulo cuerpo;
 
-	public T_Rex(float x, float y, float ancho, float alto, float velocidad, int vidas, int cantMaxFireballs,
+	public T_Rex(float x, float y, float ancho, float alto, int velocidad, int vidas, int cantMaxFireballs,
 			char orientacion) {
 		this.x = x;
 		this.y = y;

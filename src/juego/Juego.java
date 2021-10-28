@@ -1,7 +1,6 @@
 package juego;
 
 import java.awt.Color;
-import java.util.Random;
 import entorno.Herramientas;
 
 import entorno.Entorno;
@@ -17,51 +16,69 @@ public class Juego extends InterfaceJuego {
 	private Raptor[] raptors;
 	private T_Rex rex;
 	private Rectangulo[] pisos;
+	private Computadora commodore;
+	private Vida[] vidas;
+	private BonoPuntaje[] bonos;
 
-	//Multimedia
+	// Multimedia
 	private java.awt.Image fondoImagen;
 	private java.awt.Image pisosImagen;
 	private java.awt.Image pisoImagen;
 
-	//Contadores - contR(raptors) - contFB(fireballs)
-	private int contSalto, contSuperSalto, contR, contFB, puntaje;
+	// Contadores - contR(raptors) - contFB(fireballs)
+	private int contSalto, contSuperSalto, contadorVueltasRaptors, cantVueltasRaptors;
+	private int contFB, contEnemigosEliminados, puntaje, selectorNivel;
 
-	//Flags de activación y colisiones
-	private boolean flagBarb, flagRaptors, flagRex, flagGameOver, flagInmune, flagCastillo;
+	// Flags de activación y colisiones
+	private boolean flagCastillo, flagBarb, flagRaptors, flagRex, flagGameOver, flagGanaste;
 	private boolean hayColisionConPisosBarbarianna, hayColisionConPisosRaptor;
 
 	Juego() {
 		// Inicializa el objeto entorno
-		this.entorno = new Entorno(this, "Sakura Ikebana Delivery - Grupo 4 - v1", 800, 600);
+		this.entorno = new Entorno(this, "Castlevania, Barbarianna Viking Edition - Grupo 4", 800, 600);
 
 		// Inicializar lo que haga falta para el juego
 
-		construirPisos(); //Inicializa y declara los elementos del array de pisos.
+		construirPisos(); // Inicializa y declara los elementos del array de pisos.
 		fondoImagen = Herramientas.cargarImagen("fondo.png");
 		pisoImagen = Herramientas.cargarImagen("piso.png");
 		pisosImagen = Herramientas.cargarImagen("pisos.png");
-        
+
 		// Config. de Barbarianna
 		barb = new Barbarianna(50, 540, 25, 30, 2, 3, 'D'); // planta baja (50,540)
 		contSalto = 0;
 		contSuperSalto = 0;
-		puntaje = 0;
-		
-		//Config. de Raptors - max raptors en pantalla: 6
+		contEnemigosEliminados = 0;
+
+		// Config. de Raptors - max raptors en pantalla: 6
 		raptors = new Raptor[6];
-		contR = 100;
-        
-		//Config. T Rex. 
-		rex = new T_Rex(700, 63, 120, 100, (float) 1.5, 10, 7, 'I');
+		cantVueltasRaptors = 250; // cant vueltas tick se genera un raptor
+		contadorVueltasRaptors = 100; // mayor a cero para arranque rápido
+
+		// Config. T Rex.
+		rex = new T_Rex(700, 63, 120, 100, 2, 10, 7, 'I');
 		contFB = 0;
+
+		// Config. Computadora Commodore 128kb
+		commodore = new Computadora(720, 90, 40, 40);
+
+		// Config. Nivel
+		puntaje = 0;
+		selectorNivel = 0;
+		vidas = new Vida[2];
+		vidas[0] = new Vida(100, 270, 20, 20);
+		vidas[1] = new Vida(750, 180, 20, 20);
+		bonos = new BonoPuntaje[2];
+		bonos[0] = new BonoPuntaje(750, 380, 20, 20);
+		bonos[1] = new BonoPuntaje(100, 50, 20, 20);
 
 		// Flags del juego
 		flagBarb = true;
-		flagRaptors = true;
-		flagRex = true;
-		flagGameOver = false;
-		flagInmune = false;
+		flagRaptors = false;
+		flagRex = false;
 		flagCastillo = true;
+		flagGameOver = false;
+		flagGanaste = false;
 
 		// Inicia el juego!
 		this.entorno.iniciar();
@@ -76,27 +93,29 @@ public class Juego extends InterfaceJuego {
 	public void tick() {
 		// Procesamiento de un instante de tiempo
 		// TECLAS: Shift: Escudo. Ctrl: super salto (solo debajo de un hueco)
-		
-		// Grafico de fondo y pisos
+
+		// Grafico de fondo, pisos y otros
 		if (flagCastillo) {
 			entorno.dibujarImagen(this.fondoImagen, 400, 300, 0);
 			graficarPisos();
-			entorno.cambiarFont("Bauhaus 93", 14, Color.WHITE);
-			entorno.escribirTexto("SCORE: " + puntaje, 340, 585);
+			commodore.graficar(entorno);
+			entorno.cambiarFont("Impact", 14, Color.GREEN);
+			entorno.escribirTexto("SCORE: " + puntaje, 300, 585);
+			entorno.escribirTexto("KILLS: " + contEnemigosEliminados, 450, 585);
 		}
-		
+
 		// Funcionalidades de Barbarianna
 		if (flagBarb) {
-			
-			barb.graficar(entorno); 
-			barb.graficarVidas(entorno); 
+
+			barb.graficar(entorno);
+			barb.graficarVidas(entorno);
 
 			// Grafico, Movimiento y Eliminacion(fuera de pantalla) de Rayo Mjolnir
 			procesarRayoMjolnir();
-            
-			procesarEventos(); //Eventos de teclado de Barbarianna
-			
-			barb.siempreDentroDePantalla(); 
+
+			procesarEventos(); // Eventos de teclado de Barbarianna
+
+			barb.siempreDentroDePantalla();
 			actualizarEstadoSalto(); // Salto de Barbarianna
 		}
 
@@ -107,10 +126,10 @@ public class Juego extends InterfaceJuego {
 
 			generacionRaptors();
 
-			// Grafico, Movimiento y Eliminacion(fuera de rango) de Raptors
+			// Grafico, Movimiento y Eliminacion(fuera de pantalla) de Raptors
 			procesarRaptors();
 
-			// Grafico, Generacion, Movimiento y Eliminacion(fuera de rango) de Rayos Laser
+			// Grafico, Generacion, Movimiento y Eliminacion(fuera de pantalla) de Rayos Laser
 			// en Raptors
 			procesarRayosLaserRaptors();
 		}
@@ -133,11 +152,21 @@ public class Juego extends InterfaceJuego {
 			entorno.escribirTexto("GAME OVER", 80, 320);
 		}
 
+		if (flagGanaste) {
+			barb.graficar(entorno); // se grafica la ultima posicion de Barbarianna
+			entorno.cambiarFont("Old English Text MT", 95, Color.WHITE);
+			entorno.escribirTexto("¡ GANASTE !", 80, 210);
+			selectorNivel();
+		}
+
 	} // tick()
+
 	/*
-	 * Utiliza el metodo hayColision para verificar colision entre objectos Rectangulos y ejecuta las acciones correspondientes.
+	 * Utiliza el metodo hayColision para verificar colision entre objectos
+	 * Rectangulos y ejecuta las acciones correspondientes.
 	 * 
 	 */
+
 	private void procesarColisiones() {
 
 		if (flagBarb) {
@@ -148,9 +177,9 @@ public class Juego extends InterfaceJuego {
 				if (hayColision(barb.getCuerpo(), piso)) { // si hay colision
 					hayColisionConPisosBarbarianna = true;
 					// al querer atravesar el piso, repele hacia arriba
-					if (barb.getCuerpo().posAbajo() >= piso.posArriba()) { //fix bug
+					if (barb.getCuerpo().posAbajo() >= piso.posArriba()) { // fix bug
 						barb.setY(piso.posArriba() - 15);
-						barb.getCuerpo().setY(piso.posArriba() - 10); 
+						barb.getCuerpo().setY(piso.posArriba() - 10);
 					}
 
 				}
@@ -158,6 +187,40 @@ public class Juego extends InterfaceJuego {
 			if (!hayColisionConPisosBarbarianna) { // si no hay colision con los pisos cae
 				barb.caer();
 			}
+
+			// Colision entre Barbarianna y la Computadora
+			if (hayColision(barb.getCuerpo(), commodore.getCuerpo())) {
+				puntaje += 5000;
+				flagBarb = flagRaptors = flagRex = false;
+				flagGanaste = true;
+				raptors = null;
+				rex = null;
+			}
+
+			// Colision entre Barbarianna y Vidas
+			for (int i = 0; i < vidas.length; i++) {
+				if (vidas[i] != null) {
+					if (hayColision(barb.getCuerpo(), vidas[i].getCuerpo())) {
+						barb.setVidas(barb.getVidas() + 1);
+						vidas[i] = null;
+					} else {
+						vidas[i].graficar(entorno);
+					}
+				}
+			}
+			
+			// Colision entre Barbarianna y Bonos
+			for (int i = 0; i < bonos.length; i++) {
+				if (bonos[i] != null) {
+					if (hayColision(barb.getCuerpo(), bonos[i].getCuerpo())) {
+						puntaje+=1000;
+						bonos[i] = null;
+					} else {
+						bonos[i].graficar(entorno);
+					}
+				}
+			}
+
 		}
 
 		if (flagRaptors) {
@@ -171,7 +234,7 @@ public class Juego extends InterfaceJuego {
 							hayColisionConPisosRaptor = true;
 							// al querer atravesar el piso, repele hacia arriba
 							if (raptor.getCuerpo().posAbajo() >= piso.posArriba()) {
-								raptor.setY(piso.posArriba() - 25); //fix bug
+								raptor.setY(piso.posArriba() - 25); // fix bug
 							}
 						}
 					}
@@ -181,12 +244,13 @@ public class Juego extends InterfaceJuego {
 				}
 			}
 
-			// Colisiones entre Raptors y Rayo Mjolnir
+			// Colisiones entre Raptors y Relampago del Mjolnir
 			for (int i = 0; i < raptors.length; i++) {
-				if (raptors[i] != null && barb.getRayo() != null) {
-					if (hayColision(raptors[i].getCuerpo(), barb.getRayo().getCuerpo())) {
+				if (raptors[i] != null && barb.getRelampago() != null) {
+					if (hayColision(raptors[i].getCuerpo(), barb.getRelampago().getCuerpo())) {
 						raptors[i] = null;
-						barb.setRayo(null);
+						barb.setRelampago(null);
+						contEnemigosEliminados++;
 						puntaje += 100;
 					}
 				}
@@ -248,7 +312,7 @@ public class Juego extends InterfaceJuego {
 						}
 					}
 				}
-				
+
 				// Colisiones entre TRex y Barbarianna
 				if (hayColision(rex.getCuerpo(), barb.getCuerpo())) {
 					barb.setVidas(barb.getVidas() - 1); // quitar vida
@@ -261,17 +325,17 @@ public class Juego extends InterfaceJuego {
 				}
 
 				// Colisiones entre TRex y Rayo Mjolnir
-				if (barb.getRayo() != null) {
-					if (hayColision(rex.getCuerpo(), barb.getRayo().getCuerpo())) {
-						barb.setRayo(null);
+				if (barb.getRelampago() != null) {
+					if (hayColision(rex.getCuerpo(), barb.getRelampago().getCuerpo())) {
+						barb.setRelampago(null);
 						rex.setVidas(rex.getVidas() - 1); // quitar vida
 						if (rex.getVidas() == 0) {
 							rex = null;
+							puntaje += 5000;
 						}
-						puntaje += 5000;
 					}
 				}
-				
+
 			}
 		}
 
@@ -325,7 +389,7 @@ public class Juego extends InterfaceJuego {
 			if (raptors[i] != null) { // esta activo el raptor
 				if (raptors[i].fueraDePantalla()) { // si esta fuera de pantalla, eliminarlo
 					raptors[i] = null;
-					contR = 100;
+					contadorVueltasRaptors = 100;
 				} else { // si esta adentro, graficar y mover
 					raptors[i].graficar(entorno);
 					raptors[i].procesarMovimiento();
@@ -336,7 +400,7 @@ public class Juego extends InterfaceJuego {
 
 	public void generacionRaptors() {
 		// se usa un contador para que no se amontonen al ser generados
-		if (contR > 100) {
+		if (contadorVueltasRaptors > cantVueltasRaptors) {
 			int pos = 0;
 			/*
 			 * en este while se recorre las posiciones hasta encontrar un raptor activo o
@@ -347,13 +411,14 @@ public class Juego extends InterfaceJuego {
 			}
 			// si la posicion es valida se genera un raptor
 			if (pos < raptors.length) {
-				raptors[pos] = new Raptor(840, 70, 50, 50, 3, 'I');
+				raptors[pos] = new Raptor(840, 85, 50, 50, 3, 'I');
 			}
-			contR = 0;
+			contadorVueltasRaptors = 0;
 		}
-		contR++;
+		contadorVueltasRaptors++;
 	}
-    // Procesamiento y control de salto de Barbarianna. 
+
+	// Procesamiento y control de salto de Barbarianna.
 	public void actualizarEstadoSalto() {
 		int cantSalto = 23;
 		if (barb.getSaltando() && contSalto < cantSalto) {
@@ -380,36 +445,39 @@ public class Juego extends InterfaceJuego {
 		}
 
 	}
-	
+
 	/*
-	 * Verifica si el rayo está dentro de pantalla, de ser asi lo grafica y mueve. En caso contrario, lo elimina.
+	 * Verifica si el rayo está dentro de pantalla, de ser asi lo grafica y mueve.
+	 * En caso contrario, lo elimina.
 	 */
 	public void procesarRayoMjolnir() {
-		if (barb.getRayo() != null) {
-			if (barb.getRayo().fueraDePantalla())
-				barb.setRayo(null);
+		if (barb.getRelampago() != null) {
+			if (barb.getRelampago().fueraDePantalla())
+				barb.setRelampago(null);
 			else {
-				barb.getRayo().graficar(entorno);
-				barb.getRayo().mover();
+				barb.getRelampago().graficar(entorno);
+				barb.getRelampago().mover();
 			}
+		} else {
+			graficarRelampagoListo();
 		}
 	}
 
 	// Control y procesamiento de eventos de Barbarianna
 	public void procesarEventos() {
-		
-		if (entorno.estaPresionada(entorno.TECLA_DERECHA) && !flagInmune && !barb.getAgachada()) {
+
+		if (entorno.estaPresionada(entorno.TECLA_DERECHA) && !barb.getEscudo() && !barb.getAgachada()) {
 			barb.setOrientacion('D');
 			barb.mover();
 		}
 
-		if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA) && !flagInmune && !barb.getAgachada()) {
+		if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA) && !barb.getEscudo() && !barb.getAgachada()) {
 			barb.setOrientacion('I');
 			barb.mover();
 		}
-		
-		if (entorno.sePresiono(entorno.TECLA_ARRIBA) && !barb.getSaltando() && !barb.getSuperSaltando()  && !barb.getEscudo() && !barb.getAgachada()
-				&& hayColisionConPisosBarbarianna)
+
+		if (entorno.sePresiono(entorno.TECLA_ARRIBA) && !barb.getSaltando() && !barb.getSuperSaltando()
+				&& !barb.getEscudo() && !barb.getAgachada() && hayColisionConPisosBarbarianna)
 			barb.setSaltando(true);
 
 		if (entorno.estaPresionada(entorno.TECLA_ABAJO)) {
@@ -425,17 +493,12 @@ public class Juego extends InterfaceJuego {
 		else
 			barb.setEscudo(false);
 
-		if (barb.getEscudo())
-			flagInmune = true;
-		else
-			flagInmune = false;
-
 		if (entorno.sePresiono(entorno.TECLA_ESPACIO) && !barb.getEscudo() && !barb.getAgachada()) {
-			if (barb.getRayo() == null && barb.getX() > 25 && barb.getX() < 775)
+			if (barb.getRelampago() == null && barb.getX() > 25 && barb.getX() < 775)
 				barb.generarRelampago();
 		}
 		if (entorno.estaPresionada(entorno.TECLA_CTRL) && barb.estaDebajoDeUnHueco(pisos) && !barb.getSuperSaltando()
-				&& !flagInmune && !barb.getAgachada() && hayColisionConPisosBarbarianna && !barb.getSaltando())
+				&& !barb.getEscudo() && !barb.getAgachada() && !barb.getSaltando() && hayColisionConPisosBarbarianna)
 			barb.setSuperSaltando(true);
 
 	}
@@ -455,6 +518,50 @@ public class Juego extends InterfaceJuego {
 		pisos[2] = new Rectangulo(475, 340, 650, 5);
 		pisos[1] = new Rectangulo(325, 450, 650, 5);
 		pisos[0] = new Rectangulo(400, 560, 800, 5);
+	}
+
+	public void graficarRelampagoListo() {
+		if (Math.sin(0.1 * barb.getX()) > 0) {
+			entorno.dibujarImagen(Herramientas.cargarImagen("rayo1Der.png"), 700, 580, 0.2, 0.09);
+		} else {
+			entorno.dibujarImagen(Herramientas.cargarImagen("rayo2Der.png"), 700, 580, -0.1, 0.09);
+		}
+	}
+
+	public void selectorNivel() {
+		entorno.cambiarFont("Impact", 27, Color.GREEN);
+		entorno.escribirTexto("Selecciona un nivel", 290, 395);
+		entorno.escribirTexto("<-----                         ----->", 285, 420);
+		if (selectorNivel == 0) {
+			entorno.cambiarFont("Impact", 37, Color.RED);
+			entorno.escribirTexto("T-REX", 140, 400);
+			entorno.cambiarFont("Impact", 37, Color.DARK_GRAY);
+			entorno.escribirTexto("INFIERNO", 570, 400);
+			if (entorno.sePresiono(entorno.TECLA_DERECHA))
+				selectorNivel = 1;
+			else if (entorno.sePresiono(entorno.TECLA_ENTER)) {
+				flagGanaste = false;
+				flagBarb = flagRex = true;
+				barb = new Barbarianna(50, 540, 25, 30, 2, 3, 'D');
+				rex = new T_Rex(700, 63, 120, 100, 2, 10, 7, 'I');
+			}
+		}
+		if (selectorNivel == 1) {
+			entorno.cambiarFont("Impact", 37, Color.DARK_GRAY);
+			entorno.escribirTexto("T-REX", 140, 400);
+			entorno.cambiarFont("Impact", 37, Color.RED);
+			entorno.escribirTexto("INFIERNO", 570, 400);
+			if (entorno.sePresiono(entorno.TECLA_IZQUIERDA))
+				selectorNivel = 0;
+			else if (entorno.sePresiono(entorno.TECLA_ENTER)) {
+				flagGanaste = false;
+				flagBarb = flagRaptors = flagRex = true;
+				barb = new Barbarianna(50, 540, 25, 30, 2, 3, 'D');
+				rex = new T_Rex(700, 63, 120, 100, 2, 10, 7, 'I');
+				raptors = new Raptor[6];
+				cantVueltasRaptors = 100;
+			}
+		}
 	}
 
 	@SuppressWarnings("unused")

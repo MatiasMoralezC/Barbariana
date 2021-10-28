@@ -17,7 +17,7 @@ public class Barbarianna {
 	private boolean superSaltando;
 	private boolean agachada;
 	private boolean escudo;
-	private RayoMjolnir rayo;
+	private Relampago relampago;
 	private Rectangulo cuerpo;
 
 	public Barbarianna(float x, float y, float ancho, float alto, int velocidad, int vidas, char orientacion) {
@@ -55,12 +55,12 @@ public class Barbarianna {
 		cuerpo.setY(y);
 	}
 
-	public RayoMjolnir getRayo() {
-		return rayo;
+	public Relampago getRelampago() {
+		return relampago;
 	}
 
-	public void setRayo(RayoMjolnir r) {
-		rayo = r;
+	public void setRelampago(Relampago r) {
+		relampago = r;
 	}
 
 	public void siempreDentroDePantalla() {
@@ -211,14 +211,14 @@ public class Barbarianna {
 	}
 	
 	public void generarRelampago() {
-		float xRayo;
+		float xRelampago;
 		if (this.orientacion == 'D') {
-			xRayo = getX() + 30;
+			xRelampago = getX() + 30;
 		} else {
-			xRayo = getX() - 30;
+			xRelampago = getX() - 30;
 		}
 
-		rayo = new RayoMjolnir(xRayo, y, 30, 10, 3, this.orientacion);
+		relampago = new Relampago(xRelampago, y, 30, 10, 3, this.orientacion);
 	}
 
 }
