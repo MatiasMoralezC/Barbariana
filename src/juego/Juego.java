@@ -26,7 +26,7 @@ public class Juego extends InterfaceJuego {
 	private java.awt.Image pisoImagen;
 
 	// Contadores - contR(raptors) - contFB(fireballs)
-	private int contSalto, contSuperSalto, contadorVueltasRaptors, cantVueltasRaptors;
+	private int contSalto, contSuperSalto, contadorVueltasRaptors, cantVueltasRaptors, contDaño;
 	private int contFB, contEnemigosEliminados, puntaje, selectorNivel;
 
 	// Flags de activación y colisiones
@@ -74,7 +74,7 @@ public class Juego extends InterfaceJuego {
 
 		// Flags del juego
 		flagBarb = true;
-		flagRaptors = false;
+		flagRaptors = true;
 		flagRex = false;
 		flagCastillo = true;
 		flagGameOver = false;
@@ -262,6 +262,7 @@ public class Juego extends InterfaceJuego {
 					if (hayColision(raptors[i].getCuerpo(), barb.getCuerpo())) {
 						raptors[i] = null;
 						barb.setVidas(barb.getVidas() - 1); // quitar vida
+						barb.setDaño(true);
 						if (barb.getVidas() == 0) { // si las vidas es igual a cero, game over!
 							flagBarb = flagRaptors = flagRex = false;
 							flagGameOver = true;
@@ -280,6 +281,7 @@ public class Juego extends InterfaceJuego {
 							raptor.setRayoLaser(null);
 							if (!barb.getEscudo()) { // si se levanta el escudo no se pierde vidas, ni puntaje
 								barb.setVidas(barb.getVidas() - 1); // quitar vida
+								barb.setDaño(true);
 								if (barb.getVidas() == 0) { // si las vidas es igual a cero, game over!
 									flagBarb = flagRaptors = flagRex = false;
 									flagGameOver = true;
@@ -303,6 +305,7 @@ public class Juego extends InterfaceJuego {
 						if (hayColision(fireballs[i].getCuerpo(), barb.getCuerpo())) {
 							fireballs[i] = null;
 							barb.setVidas(barb.getVidas() - 1); // quitar vida
+							barb.setDaño(true);
 							if (barb.getVidas() == 0) { // si las vidas es igual a cero, game over!
 								flagBarb = flagRaptors = flagRex = false;
 								flagGameOver = true;
@@ -418,6 +421,18 @@ public class Juego extends InterfaceJuego {
 		contadorVueltasRaptors++;
 	}
 
+	//Al recibir daño barbariana, muestra la animacion durante 50 tics y luego vuelve a la animacion normal
+	public void actualizarEstadoDaño() {
+		int cantDaño = 50;
+		if (barb.getDaño() && contDaño < cantDaño) {
+			contDaño++;
+		}
+		if (contDaño == cantDaño) {
+			barb.setDaño(false);
+			contDaño = 0;
+		}
+	}
+	
 	// Procesamiento y control de salto de Barbarianna.
 	public void actualizarEstadoSalto() {
 		int cantSalto = 23;
@@ -465,6 +480,8 @@ public class Juego extends InterfaceJuego {
 
 	// Control y procesamiento de eventos de Barbarianna
 	public void procesarEventos() {
+		
+		actualizarEstadoDaño();
 
 		if (entorno.estaPresionada(entorno.TECLA_DERECHA) && !barb.getEscudo() && !barb.getAgachada()) {
 			barb.setOrientacion('D');

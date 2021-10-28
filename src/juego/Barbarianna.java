@@ -17,6 +17,7 @@ public class Barbarianna {
 	private boolean superSaltando;
 	private boolean agachada;
 	private boolean escudo;
+	private boolean seDaña;
 	private Relampago relampago;
 	private Rectangulo cuerpo;
 
@@ -32,6 +33,7 @@ public class Barbarianna {
 		this.setSuperSaltando(false);
 		this.agachada = false;
 		this.escudo = false;
+		this.seDaña = false;
 		this.cuerpo = new Rectangulo(x, y, ancho, alto);
 	}
 
@@ -70,6 +72,14 @@ public class Barbarianna {
 		if (this.x >= 775) {
 			this.x = 775;
 		}
+	}
+	
+	public boolean getDaño() {
+		return seDaña;
+	}
+	
+	public void setDaño(boolean d) {
+		this.seDaña = d;
 	}
 	
 	public int getVidas() {
@@ -191,10 +201,14 @@ public class Barbarianna {
 				e.dibujarImagen(Herramientas.cargarImagen("BarbAgDer.png"), x, y, 0, escala);
 			}
 			else { // si no esta agachada
-				if(Math.sin(0.1*x)>0)
-					e.dibujarImagen(Herramientas.cargarImagen("BarbC1Der.png"), x, y, 0, escala);
-				else
-					e.dibujarImagen(Herramientas.cargarImagen("BarbC1Der.png"), x, y, 0, escala);
+				if (getDaño()) {
+					e.dibujarImagen(Herramientas.cargarImagen("DanioDer.png"), x, y, 0, escala);
+				} else {
+					if(Math.sin(0.1*x)>0)
+						e.dibujarImagen(Herramientas.cargarImagen("BarbC1Der.png"), x, y, 0, escala);
+					else
+						e.dibujarImagen(Herramientas.cargarImagen("BarbC1Der.png"), x, y, 0, escala);
+				}
 			}
 		}
 		else { // orientacion == 'I'
@@ -202,10 +216,14 @@ public class Barbarianna {
 				e.dibujarImagen(Herramientas.cargarImagen("BarbAgIzq.png"), x, y, 0, escala);
 			}
 			else {
-				if(Math.sin(0.1*x)>0) 
-					e.dibujarImagen(Herramientas.cargarImagen("BarbC1Izq.png"), x, y, 0, escala);
-				else 
-					e.dibujarImagen(Herramientas.cargarImagen("BarbC1Izq.png"), x, y, 0, escala);
+				if (getDaño()) {
+					e.dibujarImagen(Herramientas.cargarImagen("DanioIzq.png"), x, y, 0, escala);
+				} else {
+					if(Math.sin(0.1*x)>0) 
+						e.dibujarImagen(Herramientas.cargarImagen("BarbC1Izq.png"), x, y, 0, escala);
+					else 
+						e.dibujarImagen(Herramientas.cargarImagen("BarbC1Izq.png"), x, y, 0, escala);
+				}
 			}
 		}
 	}
