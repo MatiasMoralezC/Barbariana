@@ -1,7 +1,5 @@
 package juego;
 
-import java.awt.Color;
-
 import entorno.Entorno;
 import entorno.Herramientas;
 
@@ -207,7 +205,7 @@ public class Barbarianna {
 					if(Math.sin(0.1*x)>0)
 						e.dibujarImagen(Herramientas.cargarImagen("BarbC1Der.png"), x, y, 0, escala);
 					else
-						e.dibujarImagen(Herramientas.cargarImagen("BarbC1Der.png"), x, y, 0, escala);
+						e.dibujarImagen(Herramientas.cargarImagen("BarbC2Der.png"), x, y, 0, escala);
 				}
 			}
 		}
@@ -222,7 +220,7 @@ public class Barbarianna {
 					if(Math.sin(0.1*x)>0) 
 						e.dibujarImagen(Herramientas.cargarImagen("BarbC1Izq.png"), x, y, 0, escala);
 					else 
-						e.dibujarImagen(Herramientas.cargarImagen("BarbC1Izq.png"), x, y, 0, escala);
+						e.dibujarImagen(Herramientas.cargarImagen("BarbC2Izq.png"), x, y, 0, escala);
 				}
 			}
 		}

@@ -3,6 +3,7 @@ package juego;
 import java.awt.Color;
 
 import entorno.Entorno;
+import entorno.Herramientas;
 
 public class RayoLaser {
 	private float x;
@@ -45,7 +46,7 @@ public class RayoLaser {
 	}
 
 	public void graficar(Entorno e) {
-		e.dibujarRectangulo(x, y, ancho, alto, 0, Color.RED);
+		e.dibujarImagen(Herramientas.cargarImagen("laser.png"), x, y-3, 0, 0.3);
 	}
 
 }

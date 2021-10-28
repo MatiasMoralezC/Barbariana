@@ -1,6 +1,5 @@
 package juego;
 
-import java.awt.Color;
 import java.util.Random;
 
 import entorno.Entorno;
@@ -120,7 +119,13 @@ public class Raptor {
 	public void generarRayoLaser() {
 		Random rnd = new Random();
 		int velocidadRandom = 5 + rnd.nextInt(5);
-		rayoLaser = new RayoLaser(x, y, 40, 5, velocidadRandom, orientacion);
+		float xRayo;
+		if (this.orientacion == 'D') {
+			xRayo = getX() + 30;
+		} else {
+			xRayo = getX() - 30;
+		}
+		rayoLaser = new RayoLaser(xRayo, y, 30, 5, velocidadRandom, orientacion);
 	}
 
 }

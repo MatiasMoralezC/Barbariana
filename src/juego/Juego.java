@@ -52,7 +52,7 @@ public class Juego extends InterfaceJuego {
 		pisosImagen = Herramientas.cargarImagen("pisos.png");
 
 		// Config. de Barbarianna
-		barb = new Barbarianna(50, 540, 25, 30, 2, 3, 'D'); // planta baja (50,540)
+		barb = new Barbarianna(200, 100, 25, 30, 2, 3, 'D'); // planta baja (50,540)
 		contSalto = 0;
 		contSuperSalto = 0;
 		contEnemigosEliminados = 0;
@@ -73,11 +73,11 @@ public class Juego extends InterfaceJuego {
 		puntaje = 0;
 		selectorNivel = 0;
 		vidas = new Vida[2];
-		vidas[0] = new Vida(100, 270, 20, 20);
-		vidas[1] = new Vida(750, 180, 20, 20);
+		vidas[0] = new Vida(70, 270, 20, 20);
+		vidas[1] = new Vida(730, 160, 20, 20);
 		bonos = new BonoPuntaje[2];
-		bonos[0] = new BonoPuntaje(750, 380, 20, 20);
-		bonos[1] = new BonoPuntaje(100, 50, 20, 20);
+		bonos[0] = new BonoPuntaje(730, 380, 20, 20);
+		bonos[1] = new BonoPuntaje(70, 50, 20, 20);
 
 		// Flags del juego
 		flagBarb = true;
@@ -124,6 +124,7 @@ public class Juego extends InterfaceJuego {
 
 			barb.siempreDentroDePantalla();
 			actualizarEstadoSalto(); // Salto de Barbarianna
+			actualizarEstadoDaño(); // Animacion daño recibido
 		}
 
 		// Procesamiento de colisiones en general.
@@ -452,7 +453,7 @@ public class Juego extends InterfaceJuego {
 			contSalto = 0;
 		}
 
-		int cantSuperSalto = 50;
+		int cantSuperSalto = 40;
 		if (barb.getSuperSaltando() && contSuperSalto < cantSuperSalto) {
 			barb.saltar();
 			contSuperSalto++;
@@ -487,8 +488,6 @@ public class Juego extends InterfaceJuego {
 
 	// Control y procesamiento de eventos de Barbarianna
 	public void procesarEventos() {
-		
-		actualizarEstadoDaño();
 
 		if (entorno.estaPresionada(entorno.TECLA_DERECHA) && !barb.getEscudo() && !barb.getAgachada()) {
 			barb.setOrientacion('D');
@@ -577,6 +576,10 @@ public class Juego extends InterfaceJuego {
 				flagBarb = flagRex = true;
 				barb = new Barbarianna(50, 540, 25, 30, 2, 3, 'D');
 				rex = new T_Rex(700, 63, 120, 100, 2, 10, 7, 'I');
+				vidas[0] = new Vida(70, 270, 20, 20);
+				vidas[1] = new Vida(730, 160, 20, 20);
+				bonos[0] = new BonoPuntaje(730, 380, 20, 20);
+				bonos[1] = new BonoPuntaje(70, 50, 20, 20);
 			}
 		}
 		if (selectorNivel == 1) {
@@ -593,6 +596,10 @@ public class Juego extends InterfaceJuego {
 				rex = new T_Rex(700, 63, 120, 100, 2, 10, 7, 'I');
 				raptors = new Raptor[6];
 				cantVueltasRaptors = 100;
+				vidas[0] = new Vida(70, 270, 20, 20);
+				vidas[1] = new Vida(730, 160, 20, 20);
+				bonos[0] = new BonoPuntaje(730, 380, 20, 20);
+				bonos[1] = new BonoPuntaje(70, 50, 20, 20);
 			}
 		}
 	}
