@@ -28,6 +28,10 @@ public class Juego extends InterfaceJuego {
 	private java.awt.Image pisosImagen;
 	private java.awt.Image pisoImagen;
 	private Clip fxRelampago;
+	private Clip fxRaptor;
+	private Clip fxTrexRip;
+//	private Clip fxTrex;
+//	private Clip fxTrexPasos;
 
 	// Contadores - contR(raptors) - contFB(fireballs)
 	private int contSalto, contSuperSalto, contadorVueltasRaptors, cantVueltasRaptors, contDaño;
@@ -45,6 +49,10 @@ public class Juego extends InterfaceJuego {
 		
 		//Inicializa los efectos de sonido
 		fxRelampago = Herramientas.cargarSonido("thunder.wav");
+		fxRaptor = Herramientas.cargarSonido("raptor.wav");
+		fxTrexRip = Herramientas.cargarSonido("trex-rip.wav");
+//		fxTrex = Herramientas.cargarSonido("trex.wav");
+//		fxTrexPasos = Herramientas.cargarSonido("trex-pasos.wav");
 
 		construirPisos(); // Inicializa y declara los elementos del array de pisos.
 		fondoImagen = Herramientas.cargarImagen("fondo.png");
@@ -89,6 +97,7 @@ public class Juego extends InterfaceJuego {
 
 		// Inicia el juego!
 		this.entorno.iniciar();
+		
 	}
 
 	/**
@@ -144,7 +153,7 @@ public class Juego extends InterfaceJuego {
 		if (flagRex) {
 			if (rex != null) {
 				rex.procesarMovimiento();
-
+				
 				// Grafico, Generacion, Movimiento y Eliminacion(fuera de rango) de Fireballs en
 				// T-Rex
 				procesarFireballsTRex();
@@ -173,7 +182,7 @@ public class Juego extends InterfaceJuego {
 	 * Rectangulos y ejecuta las acciones correspondientes.
 	 * 
 	 */
-
+	
 	private void procesarColisiones() {
 
 		if (flagBarb) {
@@ -255,6 +264,7 @@ public class Juego extends InterfaceJuego {
 			for (int i = 0; i < raptors.length; i++) {
 				if (raptors[i] != null && barb.getRelampago() != null) {
 					if (hayColision(raptors[i].getCuerpo(), barb.getRelampago().getCuerpo())) {
+						fxRaptor();
 						raptors[i] = null;
 						barb.setRelampago(null);
 						contEnemigosEliminados++;
@@ -340,6 +350,7 @@ public class Juego extends InterfaceJuego {
 						barb.setRelampago(null);
 						rex.setVidas(rex.getVidas() - 1); // quitar vida
 						if (rex.getVidas() == 0) {
+							fxTrexRip();
 							rex = null;
 							puntaje += 5000;
 						}
@@ -560,6 +571,27 @@ public class Juego extends InterfaceJuego {
 		fxRelampago.start();
 		fxRelampago = Herramientas.cargarSonido("thunder.wav");
 	}
+	
+	public void fxRaptor() {//Reproduce el sonido del raptor y vuelve a cargar el archivo para reutilizarse
+		fxRaptor.start();
+		fxRaptor = Herramientas.cargarSonido("raptor.wav");
+	}
+	
+	public void fxTrexRip() {//Reproduce el sonido del trex y vuelve a cargar el archivo para reutilizarse
+	fxTrexRip.start();
+	fxTrexRip = Herramientas.cargarSonido("trex-rip.wav");
+}
+	
+//	public void fxTrex() {
+//		fxTrex.start();
+//		fxTrex = Herramientas.cargarSonido("trex.wav");
+//	}
+	
+//	public void fxTrexPasos() {
+//		Herramientas.loop("trex-pasos.wav");
+//		fxTrexPasos.start();
+//		fxTrexPasos = Herramientas.cargarSonido("trex-pasos.wav");
+//	}
 
 	public void selectorNivel() {
 		entorno.cambiarFont("Impact", 27, Color.GREEN);
