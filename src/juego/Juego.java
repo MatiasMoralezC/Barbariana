@@ -67,7 +67,7 @@ public class Juego extends InterfaceJuego {
 		contsRayosRaptors = new int[]{0,0,0,0,0,0};
 
 		// Config. T Rex.
-		rex = new T_Rex(700, 63, 120, 100, 2, 3, 'I');
+		rex = new T_Rex(700, 63, 120, 100, 2, 15, 'I');
 		fireballs = new Fireball[7]; // max fireballs en pantalla: 7
 		contFB = 0;
 		flagRoarSound = true;
@@ -86,7 +86,7 @@ public class Juego extends InterfaceJuego {
 		bonos[0] = new BonoPuntaje(730, 380, 20, 20);
 		bonos[1] = new BonoPuntaje(70, 50, 20, 20);
 		minas = new Mina[5];
-		minas[0] = new Mina(750,550,15,10);
+		minas[0] = new Mina(750,552,15,10);
 		minas[1] = new Mina(400,440,15,10);
 		minas[2] = new Mina(50,440,15,10);
 		minas[3] = new Mina(750,330,15,10);
@@ -546,8 +546,10 @@ public class Juego extends InterfaceJuego {
 		}
 
 		if (entorno.sePresiono(entorno.TECLA_ARRIBA) && !barb.getSaltando() && !barb.getSuperSaltando()
-				&& !barb.getEscudo() && !barb.getAgachada() && hayColisionConPisosBarbarianna)
+				&& !barb.getEscudo() && !barb.getAgachada() && hayColisionConPisosBarbarianna) {
 			barb.setSaltando(true);
+			Herramientas.play("sounds/jump.wav");
+		}
 		actualizarEstadoSalto();
 
 		if (entorno.estaPresionada(entorno.TECLA_ABAJO)) {
@@ -571,8 +573,10 @@ public class Juego extends InterfaceJuego {
 				
 		}
 		if (entorno.estaPresionada(entorno.TECLA_CTRL) && barb.estaDebajoDeUnHueco(pisos) && !barb.getSuperSaltando()
-				&& !barb.getEscudo() && !barb.getAgachada() && !barb.getSaltando() && hayColisionConPisosBarbarianna)
+				&& !barb.getEscudo() && !barb.getAgachada() && !barb.getSaltando() && hayColisionConPisosBarbarianna) {
 			barb.setSuperSaltando(true);
+			Herramientas.play("sounds/jump.wav");
+		}
 
 	}
 
@@ -595,9 +599,9 @@ public class Juego extends InterfaceJuego {
 
 	public void graficarRelampagoListo() {
 		if (Math.sin(0.1 * barb.getX()) > 0) {
-			entorno.dibujarImagen(Herramientas.cargarImagen("images/rayo1Der.png"), 700, 580, 0.2, 0.09);
+			entorno.dibujarImagen(Herramientas.cargarImagen("images/rayo1Der.png"), 700, 582, 0.2, 0.09);
 		} else {
-			entorno.dibujarImagen(Herramientas.cargarImagen("images/rayo2Der.png"), 700, 580, -0.1, 0.09);
+			entorno.dibujarImagen(Herramientas.cargarImagen("images/rayo2Der.png"), 700, 582, -0.1, 0.09);
 		}
 	}
 
@@ -633,7 +637,7 @@ public class Juego extends InterfaceJuego {
 			flagBarb = flagRex = true;
 			
 			barb = new Barbarianna(50, 540, 25, 30, 2, 3, 'D');
-			rex = new T_Rex(700, 63, 120, 100, 2, 3, 'I');
+			rex = new T_Rex(700, 63, 120, 100, 2, 15, 'I');
 			
 			if(selectorNivel == 1) {
 				flagRaptors = true;

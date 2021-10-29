@@ -226,7 +226,7 @@ public class Barbarianna {
 			xRelampago = getX() - 30;
 		}
 
-		return new Relampago(xRelampago, y, 30, 10, 3, this.orientacion);
+		return new Relampago(xRelampago, y, 30, 10, 4, this.orientacion);
 	}
 
 }
