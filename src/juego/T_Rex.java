@@ -94,14 +94,14 @@ public class T_Rex {
 		float escala = (float) 0.3;
 		if (orientacion == 'D') {
 			if (Math.sin(0.1 * x) > 0)
-				e.dibujarImagen(Herramientas.cargarImagen("RexC1Der.png"), x, y, 0.15, escala);
+				e.dibujarImagen(Herramientas.cargarImagen("images/RexC1Der.png"), x, y, 0.15, escala);
 			else
-				e.dibujarImagen(Herramientas.cargarImagen("RexC2Der.png"), x, y, 0.15, escala);
+				e.dibujarImagen(Herramientas.cargarImagen("images/RexC2Der.png"), x, y, 0.15, escala);
 		} else {
 			if (Math.sin(0.1 * x) > 0)
-				e.dibujarImagen(Herramientas.cargarImagen("RexC1Izq.png"), x, y, -0.15, escala);
+				e.dibujarImagen(Herramientas.cargarImagen("images/RexC1Izq.png"), x, y, -0.15, escala);
 			else
-				e.dibujarImagen(Herramientas.cargarImagen("RexC2Izq.png"), x, y, -0.15, escala);
+				e.dibujarImagen(Herramientas.cargarImagen("images/RexC2Izq.png"), x, y, -0.15, escala);
 		}
 
 	}

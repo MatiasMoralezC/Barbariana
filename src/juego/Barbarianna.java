@@ -179,7 +179,7 @@ public class Barbarianna {
 	public void graficarVidas(Entorno e) {
 		int pos=0;
 		for(int i=0; i<vidas; i++) {
-			e.dibujarImagen(Herramientas.cargarImagen("vidas.png"), 50 + pos, 580, 0, 0.08);
+			e.dibujarImagen(Herramientas.cargarImagen("images/vidas.png"), 50 + pos, 580, 0, 0.08);
 			pos += 40;
 		}
 	}
@@ -188,31 +188,31 @@ public class Barbarianna {
 		float escala = (float) 0.05;
 		if (orientacion == 'D') {
 			if(agachada) {
-				e.dibujarImagen(Herramientas.cargarImagen("BarbAgDer.png"), x, y, 0, escala);
+				e.dibujarImagen(Herramientas.cargarImagen("images/BarbAgDer.png"), x, y, 0, escala);
 			}
 			else { // si no esta agachada
 				if (getDaño()) {
-					e.dibujarImagen(Herramientas.cargarImagen("DanioDer.png"), x, y, 0, escala);
+					e.dibujarImagen(Herramientas.cargarImagen("images/DanioDer.png"), x, y, 0, escala);
 				} else {
 					if(Math.sin(0.1*x)>0)
-						e.dibujarImagen(Herramientas.cargarImagen("BarbC1Der.png"), x, y, 0, escala);
+						e.dibujarImagen(Herramientas.cargarImagen("images/BarbC1Der.png"), x, y, 0, escala);
 					else
-						e.dibujarImagen(Herramientas.cargarImagen("BarbC2Der.png"), x, y, 0, escala);
+						e.dibujarImagen(Herramientas.cargarImagen("images/BarbC2Der.png"), x, y, 0, escala);
 				}
 			}
 		}
 		else { // orientacion == 'I'
 			if(agachada) {
-				e.dibujarImagen(Herramientas.cargarImagen("BarbAgIzq.png"), x, y, 0, escala);
+				e.dibujarImagen(Herramientas.cargarImagen("images/BarbAgIzq.png"), x, y, 0, escala);
 			}
 			else {
 				if (getDaño()) {
-					e.dibujarImagen(Herramientas.cargarImagen("DanioIzq.png"), x, y, 0, escala);
+					e.dibujarImagen(Herramientas.cargarImagen("images/DanioIzq.png"), x, y, 0, escala);
 				} else {
 					if(Math.sin(0.1*x)>0) 
-						e.dibujarImagen(Herramientas.cargarImagen("BarbC1Izq.png"), x, y, 0, escala);
+						e.dibujarImagen(Herramientas.cargarImagen("images/BarbC1Izq.png"), x, y, 0, escala);
 					else 
-						e.dibujarImagen(Herramientas.cargarImagen("BarbC2Izq.png"), x, y, 0, escala);
+						e.dibujarImagen(Herramientas.cargarImagen("images/BarbC2Izq.png"), x, y, 0, escala);
 				}
 			}
 		}

@@ -55,6 +55,6 @@ public class Vida {
 	}
 	
 	public void graficar(Entorno e) {
-		e.dibujarImagen(Herramientas.cargarImagen("vidas.png"), x, y, 0, 0.09);
+		e.dibujarImagen(Herramientas.cargarImagen("images/vidas.png"), x, y, 0, 0.09);
 	}
 }

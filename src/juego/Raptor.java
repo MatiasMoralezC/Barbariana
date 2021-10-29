@@ -92,24 +92,24 @@ public class Raptor {
 	public void graficar(Entorno e) {
 		if(orientacion=='D') {
 			if(Math.sin(0.1*x)>0){
-				e.dibujarImagen(Herramientas.cargarImagen("raptorp3.png"), x, y, 0);
+				e.dibujarImagen(Herramientas.cargarImagen("images/raptorp3.png"), x, y, 0);
 				}
 			else {
-				e.dibujarImagen(Herramientas.cargarImagen("raptorp4.png"), x, y, 0);}
+				e.dibujarImagen(Herramientas.cargarImagen("images/raptorp4.png"), x, y, 0);}
 		}
 		else {
 			if(Math.sin(0.1*x)>0) {
-				e.dibujarImagen(Herramientas.cargarImagen("raptorp1.png"), x, y, 0);
+				e.dibujarImagen(Herramientas.cargarImagen("images/raptorp1.png"), x, y, 0);
 			}
 			else {
-				e.dibujarImagen(Herramientas.cargarImagen("raptorp2.png"), x, y, 0);
+				e.dibujarImagen(Herramientas.cargarImagen("images/raptorp2.png"), x, y, 0);
 				}
 		}
 	}
 
 	public RayoLaser generarRayoLaser() {
 		Random rnd = new Random();
-		int velocidadRandom = 5 + rnd.nextInt(5);
+		int velocidadRandom = 4 + rnd.nextInt(4);
 		float xRayo;
 		if (this.orientacion == 'D') {
 			xRayo = getX() + 30;

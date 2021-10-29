@@ -43,6 +43,6 @@ public class Fireball {
 	}
 
 	public void graficar(Entorno e) {
-		e.dibujarImagen(Herramientas.cargarImagen("fireball.png"), x, y, Math.sin(0.5*x), 0.07);
+		e.dibujarImagen(Herramientas.cargarImagen("images/fireball.png"), x, y, Math.sin(0.5*x), 0.07);
 	}
 }

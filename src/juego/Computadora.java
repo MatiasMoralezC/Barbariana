@@ -55,6 +55,6 @@ public class Computadora {
 	}
 	
 	public void graficar(Entorno e) {
-		e.dibujarImagen(Herramientas.cargarImagen("pc.png"), x, y, 0, 0.08);
+		e.dibujarImagen(Herramientas.cargarImagen("images/pc.png"), x, y, 0, 0.08);
 	}
 }

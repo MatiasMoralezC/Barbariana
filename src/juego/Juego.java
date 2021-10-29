@@ -25,16 +25,12 @@ public class Juego extends InterfaceJuego {
 	private Computadora commodore;
 	private Vida[] vidas;
 	private BonoPuntaje[] bonos;
+	private Mina[] minas;
 
 	// Multimedia
 	private java.awt.Image fondoImagen;
 	private java.awt.Image pisosImagen;
 	private java.awt.Image pisoImagen;
-	private Clip fxRelampago;
-	private Clip fxRaptor;
-	private Clip fxTrexRip;
-//	private Clip fxTrex;
-//	private Clip fxTrexPasos;
 
 	// Contadores - contR(raptors) - contFB(fireballs)
 	private int contSalto, contSuperSalto, contadorVueltasRaptors, cantVueltasRaptors, contDaño;
@@ -44,22 +40,18 @@ public class Juego extends InterfaceJuego {
 	// Flags de activación y colisiones
 	private boolean flagCastillo, flagBarb, flagRaptors, flagRex, flagGameOver, flagGanaste;
 	private boolean hayColisionConPisosBarbarianna, hayColisionConPisosRaptor;
+	private boolean flagRoarSound, flagGameOverSound;
 
 	Juego() {
 		// Inicializa el objeto entorno
 		this.entorno = new Entorno(this, "Castlevania, Barbarianna Viking Edition - Grupo 4", 800, 600);
 
 		// Inicializar lo que haga falta para el juego
-		
-		//Inicializa los efectos de sonido
-		fxRelampago = Herramientas.cargarSonido("thunder.wav");
-		fxRaptor = Herramientas.cargarSonido("raptor.wav");
-		fxTrexRip = Herramientas.cargarSonido("trex-rip.wav");
 
 		construirPisos(); // Inicializa y declara los elementos del array de pisos.
-		fondoImagen = Herramientas.cargarImagen("fondo.png");
-		pisoImagen = Herramientas.cargarImagen("piso.png");
-		pisosImagen = Herramientas.cargarImagen("pisos.png");
+		fondoImagen = Herramientas.cargarImagen("images/fondo.png");
+		pisoImagen = Herramientas.cargarImagen("images/piso.png");
+		pisosImagen = Herramientas.cargarImagen("images/pisos.png");
 
 		// Config. de Barbarianna
 		barb = new Barbarianna(50, 540, 25, 30, 2, 3, 'D'); // planta baja (50,540)
@@ -78,6 +70,7 @@ public class Juego extends InterfaceJuego {
 		rex = new T_Rex(700, 63, 120, 100, 2, 3, 'I');
 		fireballs = new Fireball[7]; // max fireballs en pantalla: 7
 		contFB = 0;
+		flagRoarSound = true;
 
 		// Config. Computadora Commodore 128kb
 		commodore = new Computadora(720, 90, 40, 40);
@@ -85,12 +78,19 @@ public class Juego extends InterfaceJuego {
 		// Config. Nivel
 		puntaje = 0;
 		selectorNivel = 0;
+		flagGameOverSound = true;
 		vidas = new Vida[2];
 		vidas[0] = new Vida(70, 270, 20, 20);
 		vidas[1] = new Vida(730, 160, 20, 20);
 		bonos = new BonoPuntaje[2];
 		bonos[0] = new BonoPuntaje(730, 380, 20, 20);
 		bonos[1] = new BonoPuntaje(70, 50, 20, 20);
+		minas = new Mina[5];
+		minas[0] = new Mina(750,550,15,10);
+		minas[1] = new Mina(400,440,15,10);
+		minas[2] = new Mina(50,440,15,10);
+		minas[3] = new Mina(750,330,15,10);
+		minas[4] = new Mina(50,220,15,10);
 
 		// Flags del juego
 		flagBarb = true;
@@ -117,7 +117,7 @@ public class Juego extends InterfaceJuego {
 
 		// Grafico de fondo, pisos y otros
 		if (flagCastillo) {
-			entorno.dibujarImagen(this.fondoImagen, 400, 300, 0);
+			entorno.dibujarImagen(fondoImagen, 400, 300, 0);
 			graficarPisos();
 			commodore.graficar(entorno);
 			entorno.cambiarFont("Impact", 14, Color.GREEN);
@@ -157,13 +157,17 @@ public class Juego extends InterfaceJuego {
 		if (flagRex) {
 			if (rex != null) {
 				rex.procesarMovimiento();
-				
-				// Grafico, Generacion, Movimiento y Eliminacion(fuera de rango) de Fireballs en
-				// T-Rex
 
 				rex.graficar(entorno);
+				
+				if(flagRoarSound) {
+					Herramientas.play("sounds/trex-roar.wav");
+					flagRoarSound=false;
+				}
 			}
 			
+			// Grafico, Generacion, Movimiento y Eliminacion(fuera de rango) de Fireballs en
+			// T-Rex
 			procesarFireballsTRex();
 
 		}
@@ -171,6 +175,10 @@ public class Juego extends InterfaceJuego {
 		if (flagGameOver) {
 			entorno.cambiarFont("Old English Text MT", 95, Color.WHITE);
 			entorno.escribirTexto("GAME OVER", 80, 320);
+			if(flagGameOverSound) {
+				Herramientas.play("sounds/game-over.wav");
+				flagGameOverSound = false;
+			}
 		}
 
 		if (flagGanaste) {
@@ -202,7 +210,6 @@ public class Juego extends InterfaceJuego {
 						barb.setY(piso.posArriba() - 15);
 						barb.getCuerpo().setY(piso.posArriba() - 10);
 					}
-
 				}
 			}
 			if (!hayColisionConPisosBarbarianna) { // si no hay colision con los pisos cae
@@ -216,6 +223,7 @@ public class Juego extends InterfaceJuego {
 				flagGanaste = true;
 				raptors = null;
 				rex = null;
+				Herramientas.play("sounds/win.wav");
 			}
 
 			// Colision entre Barbarianna y Vidas
@@ -224,6 +232,7 @@ public class Juego extends InterfaceJuego {
 					if (hayColision(barb.getCuerpo(), vidas[i].getCuerpo())) {
 						barb.setVidas( barb.getVidas() + 1);
 						vidas[i] = null;
+						Herramientas.play("sounds/take.wav");
 					} else {
 						vidas[i].graficar(entorno);
 					}
@@ -236,13 +245,34 @@ public class Juego extends InterfaceJuego {
 					if (hayColision(barb.getCuerpo(), bonos[i].getCuerpo())) {
 						puntaje+=1000;
 						bonos[i] = null;
+						Herramientas.play("sounds/take.wav");
 					} else {
 						bonos[i].graficar(entorno);
 					}
 				}
 			}
 			
-			actualizarEstadoDaño(); // Animacion daño recibido
+			// Colision entre Barbarianna y Minas
+			for (int i = 0; i < minas.length; i++) {
+				if (minas[i] != null) {
+					if (hayColision(barb.getCuerpo(), minas[i].getCuerpo())) {
+						barb.setVidas( barb.getVidas() - 1);
+						minas[i] = null;
+						Herramientas.play("sounds/explosion.wav");
+					} else {
+						minas[i].graficar(entorno);
+					}
+				}
+			}
+			
+			// Si las vidas perdidas por colisiones es igual a cero, game over!
+			if (barb.getVidas() == 0) { 
+				flagBarb = flagRaptors = flagRex = false;
+				flagGameOver = true;
+			}
+			
+			// Animacion daño recibido
+			actualizarEstadoDaño();
 
 		}
 
@@ -271,7 +301,7 @@ public class Juego extends InterfaceJuego {
 			for (int i = 0; i < raptors.length; i++) {
 				if (raptors[i] != null && relampago != null) {
 					if (hayColision(raptors[i].getCuerpo(), relampago.getCuerpo())) { // si hay colision
-						fxRaptor(); // sonido raptor rip
+						Herramientas.play("sounds/raptor.wav"); // sonido raptor rip
 						raptors[i] = null; // se elimina el raptor
 						relampago = null; // se elimina el relampago
 						contEnemigosEliminados++;
@@ -287,14 +317,12 @@ public class Juego extends InterfaceJuego {
 						
 						raptors[i] = null; // se elimina el raptor
 						barb.setVidas(barb.getVidas() - 1); // quitar vida a barb
-						if (barb.getVidas() == 0) { // si las vidas es igual a cero, game over!
-							flagBarb = flagRaptors = flagRex = false;
-							flagGameOver = true;
-						}
 						
 						if (puntaje >= 100)
 							puntaje -= 100;
+						
 						barb.setDaño(true); // para animacion de daño recibido
+						Herramientas.play("sounds/damage.wav");
 					}
 				}
 			}
@@ -307,14 +335,12 @@ public class Juego extends InterfaceJuego {
 						rayosLaser[i] = null; // se elimina su rayo laser
 						if (!barb.getEscudo()) { // si se levanta el escudo no se pierde vidas, ni puntaje
 							barb.setVidas(barb.getVidas() - 1); // quitar vida
-							if (barb.getVidas() == 0) { // si las vidas es igual a cero, game over!
-								flagBarb = flagRaptors = flagRex = false;
-								flagGameOver = true;
-							}
 							
 							if (puntaje >= 100)
 								puntaje -= 100;
+							
 							barb.setDaño(true); // para animacion de daño recibido
+							Herramientas.play("sounds/damage.wav");
 						}
 					}
 				}
@@ -331,14 +357,12 @@ public class Juego extends InterfaceJuego {
 							
 							fireballs[i] = null; // se elimina
 							barb.setVidas(barb.getVidas() - 1); // quitar vida
-							if (barb.getVidas() == 0) { // si las vidas es igual a cero, game over!
-								flagBarb = flagRaptors = flagRex = false;
-								flagGameOver = true;
-							}
 							
 							if (puntaje >= 100)
 								puntaje -= 100; // restar puntaje
+							
 							barb.setDaño(true);
+							Herramientas.play("sounds/damage.wav");
 						}
 					}
 				}
@@ -346,10 +370,7 @@ public class Juego extends InterfaceJuego {
 				// Colisiones entre TRex y Barbarianna
 				if (hayColision(rex.getCuerpo(), barb.getCuerpo())) {
 					barb.setVidas(barb.getVidas() - 1); // quitar vida
-					if (barb.getVidas() == 0) { // si las vidas es igual a cero, game over!
-						flagBarb = flagRaptors = flagRex = false;
-						flagGameOver = true;
-					}
+
 					if (puntaje >= 100)
 						puntaje -= 100; // restar puntaje
 				}
@@ -360,14 +381,15 @@ public class Juego extends InterfaceJuego {
 						relampago = null; // eliminar relampago
 						rex.setVidas(rex.getVidas() - 1); // quitar vida
 						if (rex.getVidas() == 0) { // si vidas=0, se elimina al TRex
-							fxTrexRip(); // sonido
+							Herramientas.play("sounds/trex-rip.wav"); // sonido muerte
 							rex = null;
 							puntaje += 5000;
 						}
 					}
 				}
-
+				
 			}
+			
 		}
 
 	}
@@ -467,7 +489,7 @@ public class Juego extends InterfaceJuego {
 	
 	// Procesamiento y control de salto de Barbarianna.
 	public void actualizarEstadoSalto() {
-		int cantSalto = 22;
+		int cantSalto = 20;
 		if (barb.getSaltando() && contSalto < cantSalto) {
 			barb.saltar();
 			contSalto++;
@@ -544,7 +566,7 @@ public class Juego extends InterfaceJuego {
 		if (entorno.sePresiono(entorno.TECLA_ESPACIO) && !barb.getEscudo() && !barb.getAgachada()) {
 			if (relampago == null && barb.getX() > 25 && barb.getX() < 775) {
 				relampago = barb.generarRelampago();
-				fxRelampago();
+				Herramientas.play("sounds/thunder.wav");
 			}
 				
 		}
@@ -573,81 +595,67 @@ public class Juego extends InterfaceJuego {
 
 	public void graficarRelampagoListo() {
 		if (Math.sin(0.1 * barb.getX()) > 0) {
-			entorno.dibujarImagen(Herramientas.cargarImagen("rayo1Der.png"), 700, 580, 0.2, 0.09);
+			entorno.dibujarImagen(Herramientas.cargarImagen("images/rayo1Der.png"), 700, 580, 0.2, 0.09);
 		} else {
-			entorno.dibujarImagen(Herramientas.cargarImagen("rayo2Der.png"), 700, 580, -0.1, 0.09);
+			entorno.dibujarImagen(Herramientas.cargarImagen("images/rayo2Der.png"), 700, 580, -0.1, 0.09);
 		}
 	}
-	
-	//Ejecucion de sonidos
-	public void fxRelampago() { //Reproduce el sonido del relampago y vuelve a cargar el archivo para reutilizarse
-		fxRelampago.start();
-		fxRelampago = Herramientas.cargarSonido("thunder.wav");
-	}
-	
-	public void fxRaptor() { //Reproduce el sonido del raptor y vuelve a cargar el archivo para reutilizarse
-		fxRaptor.start();
-		fxRaptor = Herramientas.cargarSonido("raptor.wav");
-	}
-	
-	public void fxTrexRip() {//Reproduce el sonido del trex y vuelve a cargar el archivo para reutilizarse
-	fxTrexRip.start();
-	fxTrexRip = Herramientas.cargarSonido("trex-rip.wav");
-}
-	
-//	public void fxTrex() {
-//		fxTrex.start();
-//		fxTrex = Herramientas.cargarSonido("trex.wav");
-//	}
-	
-//	public void fxTrexPasos() {
-//		Herramientas.loop("trex-pasos.wav");
-//		fxTrexPasos.start();
-//		fxTrexPasos = Herramientas.cargarSonido("trex-pasos.wav");
-//	}
 
 	public void selectorNivel() {
 		entorno.cambiarFont("Impact", 27, Color.GREEN);
 		entorno.escribirTexto("Selecciona un nivel", 290, 395);
 		entorno.escribirTexto("<-----                         ----->", 285, 420);
+		
 		if (selectorNivel == 0) {
 			entorno.cambiarFont("Impact", 37, Color.RED);
 			entorno.escribirTexto("T-REX", 140, 400);
 			entorno.cambiarFont("Impact", 37, Color.DARK_GRAY);
 			entorno.escribirTexto("INFIERNO", 570, 400);
-			if (entorno.sePresiono(entorno.TECLA_DERECHA))
+			if (entorno.sePresiono(entorno.TECLA_DERECHA)) {
 				selectorNivel = 1;
-			else if (entorno.sePresiono(entorno.TECLA_ENTER)) {
-				flagGanaste = false;
-				flagBarb = flagRex = true;
-				barb = new Barbarianna(50, 540, 25, 30, 2, 3, 'D');
-				rex = new T_Rex(700, 63, 120, 100, 2, 10, 'I');
-				vidas[0] = new Vida(70, 270, 20, 20);
-				vidas[1] = new Vida(730, 160, 20, 20);
-				bonos[0] = new BonoPuntaje(730, 380, 20, 20);
-				bonos[1] = new BonoPuntaje(70, 50, 20, 20);
+				Herramientas.play("sounds/selector.wav");
 			}
 		}
+		
 		if (selectorNivel == 1) {
 			entorno.cambiarFont("Impact", 37, Color.DARK_GRAY);
 			entorno.escribirTexto("T-REX", 140, 400);
 			entorno.cambiarFont("Impact", 37, Color.RED);
 			entorno.escribirTexto("INFIERNO", 570, 400);
-			if (entorno.sePresiono(entorno.TECLA_IZQUIERDA))
+			if (entorno.sePresiono(entorno.TECLA_IZQUIERDA)) {
 				selectorNivel = 0;
-			else if (entorno.sePresiono(entorno.TECLA_ENTER)) {
-				flagGanaste = false;
-				flagBarb = flagRaptors = flagRex = true;
-				barb = new Barbarianna(50, 540, 25, 30, 2, 3, 'D');
-				rex = new T_Rex(700, 63, 120, 100, 2, 10, 'I');
-				raptors = new Raptor[6];
-				cantVueltasRaptors = 100;
-				vidas[0] = new Vida(70, 270, 20, 20);
-				vidas[1] = new Vida(730, 160, 20, 20);
-				bonos[0] = new BonoPuntaje(730, 380, 20, 20);
-				bonos[1] = new BonoPuntaje(70, 50, 20, 20);
+				Herramientas.play("sounds/selector.wav");
 			}
 		}
+		
+		if (entorno.sePresiono(entorno.TECLA_ENTER)) {
+			flagGanaste = false;
+			flagBarb = flagRex = true;
+			
+			barb = new Barbarianna(50, 540, 25, 30, 2, 3, 'D');
+			rex = new T_Rex(700, 63, 120, 100, 2, 3, 'I');
+			
+			if(selectorNivel == 1) {
+				flagRaptors = true;
+				raptors = new Raptor[6];
+				cantVueltasRaptors = 100;
+			}
+			
+			vidas[0] = new Vida(70, 270, 20, 20);
+			vidas[1] = new Vida(730, 160, 20, 20);
+			bonos[0] = new BonoPuntaje(730, 380, 20, 20);
+			bonos[1] = new BonoPuntaje(70, 50, 20, 20);
+			minas[0] = new Mina(750,550,15,10);
+			minas[1] = new Mina(400,440,15,10);
+			minas[2] = new Mina(50,440,15,10);
+			minas[3] = new Mina(750,330,15,10);
+			minas[4] = new Mina(50,220,15,10);
+			
+			flagRoarSound=true;
+			flagGameOverSound=true;
+			Herramientas.play("sounds/seleccion.wav");
+		}
+		
 	}
 
 	@SuppressWarnings("unused")

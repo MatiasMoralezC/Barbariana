@@ -46,7 +46,7 @@ public class RayoLaser {
 	}
 
 	public void graficar(Entorno e) {
-		e.dibujarImagen(Herramientas.cargarImagen("laser.png"), x, y-3, 0, 0.3);
+		e.dibujarImagen(Herramientas.cargarImagen("images/laser.png"), x, y-3, 0, 0.3);
 	}
 
 }

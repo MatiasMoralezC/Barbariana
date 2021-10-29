@@ -3,14 +3,14 @@ package juego;
 import entorno.Entorno;
 import entorno.Herramientas;
 
-public class BonoPuntaje {
+public class Mina {
 	private float x;
 	private float y;
 	private float ancho;
 	private float alto;
 	private Rectangulo cuerpo;
 	
-	public BonoPuntaje(float x, float y, float ancho, float alto) {
+	public Mina(float x, float y, float ancho, float alto) {
 		this.x = x;
 		this.y = y;
 		this.ancho = ancho;
@@ -55,6 +55,7 @@ public class BonoPuntaje {
 	}
 	
 	public void graficar(Entorno e) {
-		e.dibujarImagen(Herramientas.cargarImagen("images/puntos.png"), x, y, 0, 0.07);
+		e.dibujarImagen(Herramientas.cargarImagen("images/mina.png"), x, y, 0, 0.09);
 	}
+	
 }

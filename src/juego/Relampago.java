@@ -46,15 +46,15 @@ public class Relampago {
 		float escala=(float) 0.08;
 		if (direccion == 'D') {
 			if (Math.sin(0.1 * x) > 0) {
-				e.dibujarImagen(Herramientas.cargarImagen("rayo1Der.png"), x, y, 0, escala);
+				e.dibujarImagen(Herramientas.cargarImagen("images/rayo1Der.png"), x, y, 0, escala);
 			} else {
-				e.dibujarImagen(Herramientas.cargarImagen("rayo2Der.png"), x, y, 0, escala);
+				e.dibujarImagen(Herramientas.cargarImagen("images/rayo2Der.png"), x, y, 0, escala);
 			}
 		} else {
 			if (Math.sin(0.1 * x) > 0) {
-				e.dibujarImagen(Herramientas.cargarImagen("rayo1Izq.png"), x, y, 0, escala);
+				e.dibujarImagen(Herramientas.cargarImagen("images/rayo1Izq.png"), x, y, 0, escala);
 			} else {
-				e.dibujarImagen(Herramientas.cargarImagen("rayo2Izq.png"), x, y, 0, escala);
+				e.dibujarImagen(Herramientas.cargarImagen("images/rayo2Izq.png"), x, y, 0, escala);
 			}
 		}
 	}
