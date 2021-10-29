@@ -16,7 +16,6 @@ public class Barbarianna {
 	private boolean agachada;
 	private boolean escudo;
 	private boolean seDaña;
-	private Relampago relampago;
 	private Rectangulo cuerpo;
 
 	public Barbarianna(float x, float y, float ancho, float alto, int velocidad, int vidas, char orientacion) {
@@ -53,14 +52,6 @@ public class Barbarianna {
 	public void caer() {
 		y += 3;
 		cuerpo.setY(y);
-	}
-
-	public Relampago getRelampago() {
-		return relampago;
-	}
-
-	public void setRelampago(Relampago r) {
-		relampago = r;
 	}
 
 	public void siempreDentroDePantalla() {
@@ -172,6 +163,7 @@ public class Barbarianna {
 		return cuerpo;
 	}
 	
+	// Devuelve verdadero si esta en un area de supersalto
 	public boolean estaDebajoDeUnHueco(Rectangulo[] pisos) {
 		// se toma un piso con hueco a la derecha y se crea una columna imaginaria
 		if(x>pisos[3].posDerecha()+20 && y>pisos[4].getY()) { // rango y ( pos4toPiso - 600)
@@ -226,7 +218,7 @@ public class Barbarianna {
 		}
 	}
 	
-	public void generarRelampago() {
+	public Relampago generarRelampago() {
 		float xRelampago;
 		if (this.orientacion == 'D') {
 			xRelampago = getX() + 30;
@@ -234,7 +226,7 @@ public class Barbarianna {
 			xRelampago = getX() - 30;
 		}
 
-		relampago = new Relampago(xRelampago, y, 30, 10, 3, this.orientacion);
+		return new Relampago(xRelampago, y, 30, 10, 3, this.orientacion);
 	}
 
 }

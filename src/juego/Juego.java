@@ -16,8 +16,11 @@ public class Juego extends InterfaceJuego {
 	// Variables y métodos propios de cada grupo
 
 	private Barbarianna barb;
+	private Relampago relampago;
 	private Raptor[] raptors;
+	private RayoLaser[] rayosLaser;
 	private T_Rex rex;
+	private Fireball[] fireballs;
 	private Rectangulo[] pisos;
 	private Computadora commodore;
 	private Vida[] vidas;
@@ -36,6 +39,7 @@ public class Juego extends InterfaceJuego {
 	// Contadores - contR(raptors) - contFB(fireballs)
 	private int contSalto, contSuperSalto, contadorVueltasRaptors, cantVueltasRaptors, contDaño;
 	private int contFB, contEnemigosEliminados, puntaje, selectorNivel;
+	private int[] contsRayosRaptors; 
 
 	// Flags de activación y colisiones
 	private boolean flagCastillo, flagBarb, flagRaptors, flagRex, flagGameOver, flagGanaste;
@@ -51,8 +55,6 @@ public class Juego extends InterfaceJuego {
 		fxRelampago = Herramientas.cargarSonido("thunder.wav");
 		fxRaptor = Herramientas.cargarSonido("raptor.wav");
 		fxTrexRip = Herramientas.cargarSonido("trex-rip.wav");
-//		fxTrex = Herramientas.cargarSonido("trex.wav");
-//		fxTrexPasos = Herramientas.cargarSonido("trex-pasos.wav");
 
 		construirPisos(); // Inicializa y declara los elementos del array de pisos.
 		fondoImagen = Herramientas.cargarImagen("fondo.png");
@@ -60,18 +62,21 @@ public class Juego extends InterfaceJuego {
 		pisosImagen = Herramientas.cargarImagen("pisos.png");
 
 		// Config. de Barbarianna
-		barb = new Barbarianna(200, 100, 25, 30, 2, 3, 'D'); // planta baja (50,540)
+		barb = new Barbarianna(50, 540, 25, 30, 2, 3, 'D'); // planta baja (50,540)
 		contSalto = 0;
 		contSuperSalto = 0;
 		contEnemigosEliminados = 0;
 
 		// Config. de Raptors - max raptors en pantalla: 6
 		raptors = new Raptor[6];
-		cantVueltasRaptors = 250; // cant vueltas tick se genera un raptor
+		rayosLaser = new RayoLaser[6];
+		cantVueltasRaptors = 200; // cant vueltas tick se genera un raptor
 		contadorVueltasRaptors = 100; // mayor a cero para arranque rápido
+		contsRayosRaptors = new int[]{0,0,0,0,0,0};
 
 		// Config. T Rex.
-		rex = new T_Rex(700, 63, 120, 100, 2, 10, 7, 'I');
+		rex = new T_Rex(700, 63, 120, 100, 2, 3, 'I');
+		fireballs = new Fireball[7]; // max fireballs en pantalla: 7
 		contFB = 0;
 
 		// Config. Computadora Commodore 128kb
@@ -126,14 +131,12 @@ public class Juego extends InterfaceJuego {
 			barb.graficar(entorno);
 			barb.graficarVidas(entorno);
 
-			// Grafico, Movimiento y Eliminacion(fuera de pantalla) de Rayo Mjolnir
-			procesarRayoMjolnir();
+			// Grafico, Movimiento y Eliminacion(fuera de pantalla) de Relampago Mjolnir
+			procesarRelampagoMjolnir();
 
-			procesarEventos(); // Eventos de teclado de Barbarianna
+			procesarEventos();
 
 			barb.siempreDentroDePantalla();
-			actualizarEstadoSalto(); // Salto de Barbarianna
-			actualizarEstadoDaño(); // Animacion daño recibido
 		}
 
 		// Procesamiento de colisiones en general.
@@ -157,10 +160,11 @@ public class Juego extends InterfaceJuego {
 				
 				// Grafico, Generacion, Movimiento y Eliminacion(fuera de rango) de Fireballs en
 				// T-Rex
-				procesarFireballsTRex();
 
 				rex.graficar(entorno);
 			}
+			
+			procesarFireballsTRex();
 
 		}
 
@@ -218,7 +222,7 @@ public class Juego extends InterfaceJuego {
 			for (int i = 0; i < vidas.length; i++) {
 				if (vidas[i] != null) {
 					if (hayColision(barb.getCuerpo(), vidas[i].getCuerpo())) {
-						barb.setVidas(barb.getVidas() + 1);
+						barb.setVidas( barb.getVidas() + 1);
 						vidas[i] = null;
 					} else {
 						vidas[i].graficar(entorno);
@@ -237,6 +241,8 @@ public class Juego extends InterfaceJuego {
 					}
 				}
 			}
+			
+			actualizarEstadoDaño(); // Animacion daño recibido
 
 		}
 
@@ -263,11 +269,11 @@ public class Juego extends InterfaceJuego {
 
 			// Colisiones entre Raptors y Relampago del Mjolnir
 			for (int i = 0; i < raptors.length; i++) {
-				if (raptors[i] != null && barb.getRelampago() != null) {
-					if (hayColision(raptors[i].getCuerpo(), barb.getRelampago().getCuerpo())) {
-						fxRaptor();
-						raptors[i] = null;
-						barb.setRelampago(null);
+				if (raptors[i] != null && relampago != null) {
+					if (hayColision(raptors[i].getCuerpo(), relampago.getCuerpo())) { // si hay colision
+						fxRaptor(); // sonido raptor rip
+						raptors[i] = null; // se elimina el raptor
+						relampago = null; // se elimina el relampago
 						contEnemigosEliminados++;
 						puntaje += 100;
 					}
@@ -278,35 +284,37 @@ public class Juego extends InterfaceJuego {
 			for (int i = 0; i < raptors.length; i++) {
 				if (raptors[i] != null) {
 					if (hayColision(raptors[i].getCuerpo(), barb.getCuerpo())) {
-						raptors[i] = null;
-						barb.setVidas(barb.getVidas() - 1); // quitar vida
-						barb.setDaño(true);
+						
+						raptors[i] = null; // se elimina el raptor
+						barb.setVidas(barb.getVidas() - 1); // quitar vida a barb
 						if (barb.getVidas() == 0) { // si las vidas es igual a cero, game over!
 							flagBarb = flagRaptors = flagRex = false;
 							flagGameOver = true;
 						}
+						
 						if (puntaje >= 100)
-							puntaje -= 100; // restar puntaje
+							puntaje -= 100;
+						barb.setDaño(true); // para animacion de daño recibido
 					}
 				}
 			}
 
 			// Colisiones entre Rayos Laser de Raptors y Barbarianna
-			for (Raptor raptor : raptors) {
-				if (raptor != null) { // si esta activo el raptor
-					if (raptor.getRayoLaser() != null) { // si esta activo su rayo laser
-						if (hayColision(raptor.getRayoLaser().getCuerpo(), barb.getCuerpo())) {
-							raptor.setRayoLaser(null);
-							if (!barb.getEscudo()) { // si se levanta el escudo no se pierde vidas, ni puntaje
-								barb.setVidas(barb.getVidas() - 1); // quitar vida
-								barb.setDaño(true);
-								if (barb.getVidas() == 0) { // si las vidas es igual a cero, game over!
-									flagBarb = flagRaptors = flagRex = false;
-									flagGameOver = true;
-								}
-								if (puntaje >= 100)
-									puntaje -= 100; // restar puntaje
+			for (int i=0; i<rayosLaser.length; i++) {
+				if (rayosLaser[i] != null) { // si hay instancia de su rayo laser
+					if (hayColision(rayosLaser[i].getCuerpo(), barb.getCuerpo())) {
+						
+						rayosLaser[i] = null; // se elimina su rayo laser
+						if (!barb.getEscudo()) { // si se levanta el escudo no se pierde vidas, ni puntaje
+							barb.setVidas(barb.getVidas() - 1); // quitar vida
+							if (barb.getVidas() == 0) { // si las vidas es igual a cero, game over!
+								flagBarb = flagRaptors = flagRex = false;
+								flagGameOver = true;
 							}
+							
+							if (puntaje >= 100)
+								puntaje -= 100;
+							barb.setDaño(true); // para animacion de daño recibido
 						}
 					}
 				}
@@ -317,19 +325,20 @@ public class Juego extends InterfaceJuego {
 
 			// Colisiones entre Fireballs y Barbarianna
 			if (rex != null) {
-				Fireball[] fireballs = rex.getFireballs();
 				for (int i = 0; i < fireballs.length; i++) {
-					if (fireballs[i] != null) {
+					if (fireballs[i] != null) { // si hay instancia de fireball
 						if (hayColision(fireballs[i].getCuerpo(), barb.getCuerpo())) {
-							fireballs[i] = null;
+							
+							fireballs[i] = null; // se elimina
 							barb.setVidas(barb.getVidas() - 1); // quitar vida
-							barb.setDaño(true);
 							if (barb.getVidas() == 0) { // si las vidas es igual a cero, game over!
 								flagBarb = flagRaptors = flagRex = false;
 								flagGameOver = true;
 							}
+							
 							if (puntaje >= 100)
 								puntaje -= 100; // restar puntaje
+							barb.setDaño(true);
 						}
 					}
 				}
@@ -345,13 +354,13 @@ public class Juego extends InterfaceJuego {
 						puntaje -= 100; // restar puntaje
 				}
 
-				// Colisiones entre TRex y Rayo Mjolnir
-				if (barb.getRelampago() != null) {
-					if (hayColision(rex.getCuerpo(), barb.getRelampago().getCuerpo())) {
-						barb.setRelampago(null);
+				// Colisiones entre TRex y Relampago Mjolnir
+				if (relampago != null) { // si hay instancia de relampago 
+					if (hayColision(rex.getCuerpo(), relampago.getCuerpo())) {
+						relampago = null; // eliminar relampago
 						rex.setVidas(rex.getVidas() - 1); // quitar vida
-						if (rex.getVidas() == 0) {
-							fxTrexRip();
+						if (rex.getVidas() == 0) { // si vidas=0, se elimina al TRex
+							fxTrexRip(); // sonido
 							rex = null;
 							puntaje += 5000;
 						}
@@ -369,18 +378,16 @@ public class Juego extends InterfaceJuego {
 	}
 
 	public void procesarFireballsTRex() {
-		Fireball[] fireballs = rex.getFireballs();
-
 		for (int i = 0; i < fireballs.length; i++) {
-			if (fireballs[i] == null) {
-				if (contFB > 70) {
+			if (fireballs[i] == null) { // si no hay instancia
+				if (contFB > 70 && rex != null) { // un contador para que no se amontonen
 					fireballs[i] = rex.generarFireball();
 					contFB = 0;
 				}
-			} else {
-				if (fireballs[i].fueraDePantalla()) {
+			} else { // si hay instancia
+				if (fireballs[i].fueraDePantalla()) { // si esta fuera de pantalla se elimina
 					fireballs[i] = null;
-				} else {
+				} else { // si no esta fuera de pantalla se mueve y se grafica
 					fireballs[i].mover();
 					fireballs[i].graficar(entorno);
 				}
@@ -390,29 +397,37 @@ public class Juego extends InterfaceJuego {
 	}
 
 	public void procesarRayosLaserRaptors() {
-		for (Raptor raptor : raptors) {
-			if (raptor != null) { // si esta activo el raptor
-				if (raptor.getRayoLaser() == null) { // si esta inactivo su rayo laser se lo genera
-					raptor.generarRayoLaser();
-				} else { // si esta inactivo su rayo laser
-					if (raptor.getRayoLaser().fueraDePantalla()) { // si esta fuera de pantalla se elimina el rayo
-						raptor.setRayoLaser(null);
-					} else { // si esta dentro de pantalla se grafica y se mueve el rayo
-						raptor.getRayoLaser().mover();
-						raptor.getRayoLaser().graficar(entorno);
+		for (int i=0; i<raptors.length; i++) {
+			
+			if (raptors[i] != null) { // si hay instancia de raptor
+				if (rayosLaser[i] == null) { // si no hay instancia de su rayo laser
+					if(contsRayosRaptors[i]>100) { // cont para cada raptor para no amontonar rayos
+						rayosLaser[i] = raptors[i].generarRayoLaser();
+						contsRayosRaptors[i]=0;
 					}
 				}
 			}
+			
+			if(rayosLaser[i] != null) { // si hay instancia de su rayo laser
+				if (rayosLaser[i].fueraDePantalla()) { // si esta fuera de pantalla se elimina
+					rayosLaser[i] = null;
+				} else { // si esta dentro de pantalla se grafica y se mueve
+					rayosLaser[i].mover();
+					rayosLaser[i].graficar(entorno);
+				}
+			}
+			contsRayosRaptors[i]++;
 		}
+		
 	}
 
 	public void procesarRaptors() {
 		for (int i = 0; i < raptors.length; i++) {
-			if (raptors[i] != null) { // esta activo el raptor
-				if (raptors[i].fueraDePantalla()) { // si esta fuera de pantalla, eliminarlo
+			if (raptors[i] != null) { // si hay instancia de raptor
+				if (raptors[i].fueraDePantalla()) { // si esta fuera de pantalla se elimina
 					raptors[i] = null;
-					contadorVueltasRaptors = 100;
-				} else { // si esta adentro, graficar y mover
+					contadorVueltasRaptors = 100; // se aumenta el contador para generar otro rapidamente
+				} else { // si no esta fuera de pantalla se grafica y se mueve
 					raptors[i].graficar(entorno);
 					raptors[i].procesarMovimiento();
 				}
@@ -424,16 +439,14 @@ public class Juego extends InterfaceJuego {
 		// se usa un contador para que no se amontonen al ser generados
 		if (contadorVueltasRaptors > cantVueltasRaptors) {
 			int pos = 0;
-			/*
-			 * en este while se recorre las posiciones hasta encontrar un raptor activo o
-			 * hasta que la posicion este fuera del rango del arreglo
-			 */
+			// en este while se recorre las posiciones hasta encontrar un raptor activo o
+			// hasta que la posicion este fuera del rango del arreglo
 			while (pos < raptors.length && raptors[pos] != null) {
 				pos++;
 			}
 			// si la posicion es valida se genera un raptor
 			if (pos < raptors.length) {
-				raptors[pos] = new Raptor(840, 85, 50, 50, 3, 'I');
+				raptors[pos] = new Raptor(840, 90, 50, 50, 2, 'I');
 			}
 			contadorVueltasRaptors = 0;
 		}
@@ -454,7 +467,7 @@ public class Juego extends InterfaceJuego {
 	
 	// Procesamiento y control de salto de Barbarianna.
 	public void actualizarEstadoSalto() {
-		int cantSalto = 23;
+		int cantSalto = 22;
 		if (barb.getSaltando() && contSalto < cantSalto) {
 			barb.saltar();
 			contSalto++;
@@ -481,16 +494,16 @@ public class Juego extends InterfaceJuego {
 	}
 
 	/*
-	 * Verifica si el rayo está dentro de pantalla, de ser asi lo grafica y mueve.
+	 * Verifica si el relampago está dentro de pantalla, de ser asi lo grafica y mueve.
 	 * En caso contrario, lo elimina.
 	 */
-	public void procesarRayoMjolnir() {
-		if (barb.getRelampago() != null) {
-			if (barb.getRelampago().fueraDePantalla())
-				barb.setRelampago(null);
-			else {
-				barb.getRelampago().graficar(entorno);
-				barb.getRelampago().mover();
+	public void procesarRelampagoMjolnir() {
+		if (relampago != null) { // si hay instancia
+			if (relampago.fueraDePantalla()) // y el relampago fuera de pantalla lo elimina
+				relampago = null;
+			else { // sino esta fuera de pantalla
+				relampago.graficar(entorno);
+				relampago.mover();
 			}
 		} else {
 			graficarRelampagoListo();
@@ -513,13 +526,14 @@ public class Juego extends InterfaceJuego {
 		if (entorno.sePresiono(entorno.TECLA_ARRIBA) && !barb.getSaltando() && !barb.getSuperSaltando()
 				&& !barb.getEscudo() && !barb.getAgachada() && hayColisionConPisosBarbarianna)
 			barb.setSaltando(true);
+		actualizarEstadoSalto();
 
 		if (entorno.estaPresionada(entorno.TECLA_ABAJO)) {
 			barb.setAgachada(true);
-			barb.getCuerpo().setAlto(20);
+			barb.getCuerpo().setAlto(20); // se achica el hitbox porque esta agachada
 		} else {
 			barb.setAgachada(false);
-			barb.getCuerpo().setAlto(30);
+			barb.getCuerpo().setAlto(30); // se vuelve al hitbox normal
 		}
 
 		if (entorno.estaPresionada(entorno.TECLA_SHIFT))
@@ -528,8 +542,8 @@ public class Juego extends InterfaceJuego {
 			barb.setEscudo(false);
 
 		if (entorno.sePresiono(entorno.TECLA_ESPACIO) && !barb.getEscudo() && !barb.getAgachada()) {
-			if (barb.getRelampago() == null && barb.getX() > 25 && barb.getX() < 775) {
-				barb.generarRelampago();
+			if (relampago == null && barb.getX() > 25 && barb.getX() < 775) {
+				relampago = barb.generarRelampago();
 				fxRelampago();
 			}
 				
@@ -566,12 +580,12 @@ public class Juego extends InterfaceJuego {
 	}
 	
 	//Ejecucion de sonidos
-	public void fxRelampago() { //Reproduce el sonido del rayo y vuelve a cargar el archivo para reutilizarse
+	public void fxRelampago() { //Reproduce el sonido del relampago y vuelve a cargar el archivo para reutilizarse
 		fxRelampago.start();
 		fxRelampago = Herramientas.cargarSonido("thunder.wav");
 	}
 	
-	public void fxRaptor() {//Reproduce el sonido del raptor y vuelve a cargar el archivo para reutilizarse
+	public void fxRaptor() { //Reproduce el sonido del raptor y vuelve a cargar el archivo para reutilizarse
 		fxRaptor.start();
 		fxRaptor = Herramientas.cargarSonido("raptor.wav");
 	}
@@ -607,7 +621,7 @@ public class Juego extends InterfaceJuego {
 				flagGanaste = false;
 				flagBarb = flagRex = true;
 				barb = new Barbarianna(50, 540, 25, 30, 2, 3, 'D');
-				rex = new T_Rex(700, 63, 120, 100, 2, 10, 7, 'I');
+				rex = new T_Rex(700, 63, 120, 100, 2, 10, 'I');
 				vidas[0] = new Vida(70, 270, 20, 20);
 				vidas[1] = new Vida(730, 160, 20, 20);
 				bonos[0] = new BonoPuntaje(730, 380, 20, 20);
@@ -625,7 +639,7 @@ public class Juego extends InterfaceJuego {
 				flagGanaste = false;
 				flagBarb = flagRaptors = flagRex = true;
 				barb = new Barbarianna(50, 540, 25, 30, 2, 3, 'D');
-				rex = new T_Rex(700, 63, 120, 100, 2, 10, 7, 'I');
+				rex = new T_Rex(700, 63, 120, 100, 2, 10, 'I');
 				raptors = new Raptor[6];
 				cantVueltasRaptors = 100;
 				vidas[0] = new Vida(70, 270, 20, 20);

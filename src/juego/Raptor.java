@@ -12,7 +12,6 @@ public class Raptor {
 	private float alto;
 	private int velocidad;
 	private char orientacion;
-	private RayoLaser rayoLaser;
 	private Rectangulo cuerpo;
 
 	public Raptor(float x, float y, float ancho, float alto, int velocidad, char orientacion) {
@@ -55,14 +54,6 @@ public class Raptor {
 
 	public void setAlto(float alto) {
 		this.alto = alto;
-	}
-
-	public RayoLaser getRayoLaser() {
-		return rayoLaser;
-	}
-
-	public void setRayoLaser(RayoLaser rayoLaser) {
-		this.rayoLaser = rayoLaser;
 	}
 
 	public Rectangulo getCuerpo() {
@@ -116,7 +107,7 @@ public class Raptor {
 		}
 	}
 
-	public void generarRayoLaser() {
+	public RayoLaser generarRayoLaser() {
 		Random rnd = new Random();
 		int velocidadRandom = 5 + rnd.nextInt(5);
 		float xRayo;
@@ -125,7 +116,7 @@ public class Raptor {
 		} else {
 			xRayo = getX() - 30;
 		}
-		rayoLaser = new RayoLaser(xRayo, y, 30, 5, velocidadRandom, orientacion);
+		return new RayoLaser(xRayo, y, 30, 5, velocidadRandom, orientacion);
 	}
 
 }

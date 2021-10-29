@@ -13,11 +13,9 @@ public class T_Rex {
 	private int velocidad;
 	private int vidas;
 	private char orientacion;
-	private Fireball[] fireballs;
 	private Rectangulo cuerpo;
 
-	public T_Rex(float x, float y, float ancho, float alto, int velocidad, int vidas, int cantMaxFireballs,
-			char orientacion) {
+	public T_Rex(float x, float y, float ancho, float alto, int velocidad, int vidas, char orientacion) {
 		this.x = x;
 		this.y = y;
 		this.ancho = ancho;
@@ -25,7 +23,6 @@ public class T_Rex {
 		this.velocidad = velocidad;
 		this.vidas = vidas;
 		this.orientacion = orientacion;
-		this.fireballs = new Fireball[cantMaxFireballs];
 		this.cuerpo = new Rectangulo(x, y, ancho, alto);
 	}
 
@@ -63,10 +60,6 @@ public class T_Rex {
 
 	public void setVidas(int vidas) {
 		this.vidas = vidas;
-	}
-
-	public Fireball[] getFireballs() {
-		return fireballs;
 	}
 
 	public void setOrientacion(char orient) {
