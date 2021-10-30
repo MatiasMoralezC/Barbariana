@@ -2,12 +2,9 @@ package juego;
 
 import java.awt.Color;
 
-import javax.sound.sampled.Clip;
-
-import entorno.Herramientas;
-
 import entorno.Entorno;
 import entorno.InterfaceJuego;
+import entorno.Herramientas;
 
 public class Juego extends InterfaceJuego {
 	// El objeto Entorno que controla el tiempo y otros
@@ -32,15 +29,15 @@ public class Juego extends InterfaceJuego {
 	private java.awt.Image pisosImagen;
 	private java.awt.Image pisoImagen;
 
-	// Contadores - contR(raptors) - contFB(fireballs)
+	// Contadores
 	private int contSalto, contSuperSalto, contadorVueltasRaptors, cantVueltasRaptors, contDaño;
-	private int contFB, contEnemigosEliminados, puntaje, selectorNivel;
+	private int contFireballs, contEnemigosEliminados, contColor, puntaje, selectorNivel;
 	private int[] contsRayosRaptors; 
 
 	// Flags de activación y colisiones
-	private boolean flagCastillo, flagBarb, flagRaptors, flagRex, flagGameOver, flagGanaste;
+	private boolean flagCastillo, flagBarb, flagRaptors, flagRex, flagPantallaInicial;
 	private boolean hayColisionConPisosBarbarianna, hayColisionConPisosRaptor;
-	private boolean flagRoarSound, flagGameOverSound;
+	private boolean flagRoarSound, flagGameOver, flagGameOverSound, flagGanaste;
 
 	Juego() {
 		// Inicializa el objeto entorno
@@ -48,7 +45,11 @@ public class Juego extends InterfaceJuego {
 
 		// Inicializar lo que haga falta para el juego
 
-		construirPisos(); // Inicializa y declara los elementos del array de pisos.
+		// Iniciar musica
+		Herramientas.loop("sounds/music-thunder.wav");
+		
+		// Config. de Pisos
+		construirPisos(); // inicializa y declara los elementos del array de pisos.
 		fondoImagen = Herramientas.cargarImagen("images/fondo.png");
 		pisoImagen = Herramientas.cargarImagen("images/piso.png");
 		pisosImagen = Herramientas.cargarImagen("images/pisos.png");
@@ -69,37 +70,41 @@ public class Juego extends InterfaceJuego {
 		// Config. T Rex.
 		rex = new T_Rex(700, 63, 120, 100, 2, 15, 'I');
 		fireballs = new Fireball[7]; // max fireballs en pantalla: 7
-		contFB = 0;
+		contFireballs = 0;
 		flagRoarSound = true;
 
 		// Config. Computadora Commodore 128kb
 		commodore = new Computadora(720, 90, 40, 40);
 
-		// Config. Nivel
-		puntaje = 0;
-		selectorNivel = 0;
-		flagGameOverSound = true;
+		// Config. Vidas, Bonos y Minas
 		vidas = new Vida[2];
-		vidas[0] = new Vida(70, 270, 20, 20);
-		vidas[1] = new Vida(730, 160, 20, 20);
+		vidas[0] = new Vida(90, 270, 20, 20);
+		vidas[1] = new Vida(710, 160, 20, 20);
 		bonos = new BonoPuntaje[2];
-		bonos[0] = new BonoPuntaje(730, 380, 20, 20);
-		bonos[1] = new BonoPuntaje(70, 50, 20, 20);
+		bonos[0] = new BonoPuntaje(710, 380, 20, 20);
+		bonos[1] = new BonoPuntaje(90, 50, 20, 20);
 		minas = new Mina[5];
 		minas[0] = new Mina(750,552,15,10);
 		minas[1] = new Mina(400,440,15,10);
 		minas[2] = new Mina(50,440,15,10);
 		minas[3] = new Mina(750,330,15,10);
 		minas[4] = new Mina(50,220,15,10);
+		
+		// Config. otros
+		puntaje = 0;
+		selectorNivel = 0;
+		contColor = 0;
 
 		// Flags del juego
-		flagBarb = true;
-		flagRaptors = true;
+		flagBarb = false;
+		flagRaptors = false;
 		flagRex = false;
-		flagCastillo = true;
+		flagCastillo = false;
+		flagPantallaInicial = true;
 		flagGameOver = false;
+		flagGameOverSound = true;
 		flagGanaste = false;
-
+		
 		// Inicia el juego!
 		this.entorno.iniciar();
 		
@@ -115,6 +120,11 @@ public class Juego extends InterfaceJuego {
 		// Procesamiento de un instante de tiempo
 		// TECLAS: Shift: Escudo. Ctrl: super salto (solo debajo de un hueco)
 
+		// Pantalla Inicial
+		if(flagPantallaInicial) {
+			procesarPantallaInicial();
+		}
+		
 		// Grafico de fondo, pisos y otros
 		if (flagCastillo) {
 			entorno.dibujarImagen(fondoImagen, 400, 300, 0);
@@ -402,9 +412,9 @@ public class Juego extends InterfaceJuego {
 	public void procesarFireballsTRex() {
 		for (int i = 0; i < fireballs.length; i++) {
 			if (fireballs[i] == null) { // si no hay instancia
-				if (contFB > 70 && rex != null) { // un contador para que no se amontonen
+				if (contFireballs > 70 && rex != null) { // un contador para que no se amontonen
 					fireballs[i] = rex.generarFireball();
-					contFB = 0;
+					contFireballs = 0;
 				}
 			} else { // si hay instancia
 				if (fireballs[i].fueraDePantalla()) { // si esta fuera de pantalla se elimina
@@ -415,7 +425,7 @@ public class Juego extends InterfaceJuego {
 				}
 			}
 		}
-		contFB++;
+		contFireballs++;
 	}
 
 	public void procesarRayosLaserRaptors() {
@@ -602,6 +612,21 @@ public class Juego extends InterfaceJuego {
 			entorno.dibujarImagen(Herramientas.cargarImagen("images/rayo1Der.png"), 700, 582, 0.2, 0.09);
 		} else {
 			entorno.dibujarImagen(Herramientas.cargarImagen("images/rayo2Der.png"), 700, 582, -0.1, 0.09);
+		}
+	}
+	
+	public void procesarPantallaInicial() {
+		entorno.dibujarImagen(fondoImagen, 400, 300, 0);
+		entorno.dibujarImagen(Herramientas.cargarImagen("images/start-screen.png"), 400, 300, 0, 0.7);
+		if(contColor == 255)
+			contColor = 0;
+		contColor++;
+		entorno.cambiarFont("Impact", 20, new Color(contColor,contColor,0));
+		entorno.escribirTexto("< Presione enter para comenzar >", 260, 550);
+		if(entorno.sePresiono(entorno.TECLA_ENTER)) {
+			flagPantallaInicial = false;
+			flagCastillo = flagBarb = flagRaptors = true;
+			Herramientas.play("sounds/game-start.wav");
 		}
 	}
 
