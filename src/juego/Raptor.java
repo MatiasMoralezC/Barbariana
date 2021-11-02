@@ -28,7 +28,7 @@ public class Raptor {
 		return x;
 	}
 
-	public void setX(int x) {
+	public void setX(float x) {
 		this.x = x;
 	}
 
